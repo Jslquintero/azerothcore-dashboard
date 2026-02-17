@@ -34,6 +34,7 @@
     <button class="tab" data-tab="logs">Logs</button>
     <button class="tab" data-tab="config">Config</button>
     <button class="tab" data-tab="realm">Realm Settings</button>
+    <button class="tab" data-tab="settings">Settings</button>
   </nav>
 
   <!-- ═══ Tab: Services ═══ -->
@@ -88,7 +89,7 @@
       <div id="configSections"></div>
       <div class="config-footer">
         <button class="btn btn-primary" id="btnSaveConfig">Save Changes</button>
-        <button class="btn btn-secondary" id="btnResetConfig">Reset</button>
+        <button class="btn btn-secondary" id="btnRefreshConfig">Refresh</button>
         <span id="configStatus" class="realm-status"></span>
       </div>
     </section>
@@ -101,6 +102,80 @@
       <p class="panel-hint">Edit realm name and address in the <code>realmlist</code> table. Changes take effect on next server restart.</p>
       <div id="realmList"></div>
       <div id="realmStatus" class="realm-status"></div>
+    </section>
+  </div>
+
+  <!-- ═══ Tab: Settings ═══ -->
+  <div class="tab-content" id="tab-settings">
+    <section class="panel">
+      <h2>Dashboard Settings</h2>
+      <p class="panel-hint">Change connection settings. The dashboard will reconnect using the new values.</p>
+
+      <div class="settings-group">
+        <h3 class="settings-group-title">AzerothCore Location</h3>
+        <div class="setup-row">
+          <div class="setup-field" style="flex:1">
+            <label>Project Root</label>
+            <div class="browse-row" style="display:flex;gap:6px">
+              <input type="text" id="settAcProjectRoot" style="flex:1;background:var(--bg-input);border:1px solid var(--gold-dim);border-radius:var(--radius);padding:8px 10px;color:var(--text);font-size:0.85rem;outline:none">
+              <button class="btn btn-secondary" id="settBtnBrowse">Browse</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3 class="settings-group-title">SOAP Connection</h3>
+        <div class="setup-row" style="display:flex;gap:10px;margin-bottom:8px">
+          <div class="setup-field" style="flex:1">
+            <label>Host</label>
+            <input type="text" id="settSoapHost" style="width:100%;background:var(--bg-input);border:1px solid var(--gold-dim);border-radius:var(--radius);padding:8px 10px;color:var(--text);font-size:0.85rem;outline:none">
+          </div>
+          <div class="setup-field" style="flex:1">
+            <label>Port</label>
+            <input type="text" id="settSoapPort" style="width:100%;background:var(--bg-input);border:1px solid var(--gold-dim);border-radius:var(--radius);padding:8px 10px;color:var(--text);font-size:0.85rem;outline:none">
+          </div>
+        </div>
+        <div class="setup-row" style="display:flex;gap:10px;margin-bottom:8px">
+          <div class="setup-field" style="flex:1">
+            <label>Username</label>
+            <input type="text" id="settSoapUser" style="width:100%;background:var(--bg-input);border:1px solid var(--gold-dim);border-radius:var(--radius);padding:8px 10px;color:var(--text);font-size:0.85rem;outline:none">
+          </div>
+          <div class="setup-field" style="flex:1">
+            <label>Password</label>
+            <input type="text" id="settSoapPass" style="width:100%;background:var(--bg-input);border:1px solid var(--gold-dim);border-radius:var(--radius);padding:8px 10px;color:var(--text);font-size:0.85rem;outline:none">
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3 class="settings-group-title">MySQL Connection</h3>
+        <div class="setup-row" style="display:flex;gap:10px;margin-bottom:8px">
+          <div class="setup-field" style="flex:1">
+            <label>Host</label>
+            <input type="text" id="settDbHost" style="width:100%;background:var(--bg-input);border:1px solid var(--gold-dim);border-radius:var(--radius);padding:8px 10px;color:var(--text);font-size:0.85rem;outline:none">
+          </div>
+          <div class="setup-field" style="flex:1">
+            <label>Port</label>
+            <input type="text" id="settDbPort" style="width:100%;background:var(--bg-input);border:1px solid var(--gold-dim);border-radius:var(--radius);padding:8px 10px;color:var(--text);font-size:0.85rem;outline:none">
+          </div>
+        </div>
+        <div class="setup-row" style="display:flex;gap:10px;margin-bottom:8px">
+          <div class="setup-field" style="flex:1">
+            <label>Username</label>
+            <input type="text" id="settDbUser" style="width:100%;background:var(--bg-input);border:1px solid var(--gold-dim);border-radius:var(--radius);padding:8px 10px;color:var(--text);font-size:0.85rem;outline:none">
+          </div>
+          <div class="setup-field" style="flex:1">
+            <label>Password</label>
+            <input type="text" id="settDbPass" style="width:100%;background:var(--bg-input);border:1px solid var(--gold-dim);border-radius:var(--radius);padding:8px 10px;color:var(--text);font-size:0.85rem;outline:none">
+          </div>
+        </div>
+      </div>
+
+      <div class="config-footer">
+        <button class="btn btn-primary" id="btnSaveSettings">Save Settings</button>
+        <span id="settingsStatus" class="realm-status"></span>
+      </div>
     </section>
   </div>
 

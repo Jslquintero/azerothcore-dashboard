@@ -32,6 +32,10 @@ class Monitor extends EventEmitter {
     return this._autoRestart;
   }
 
+  isRunning() {
+    return this._interval !== null;
+  }
+
   async _poll() {
     try {
       const statuses = await docker.getServiceStatuses();

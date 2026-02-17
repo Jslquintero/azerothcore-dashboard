@@ -1,11 +1,6 @@
 const axios = require('axios');
 const { parseStringPromise } = require('xml2js');
 
-const SOAP_HOST = process.env.SOAP_HOST || '127.0.0.1';
-const SOAP_PORT = process.env.SOAP_PORT || '7878';
-const SOAP_USER = process.env.SOAP_USER || 'admin';
-const SOAP_PASS = process.env.SOAP_PASS || 'admin';
-
 function buildEnvelope(command) {
   return `<?xml version="1.0" encoding="utf-8"?>
 <SOAP-ENV:Envelope
@@ -32,13 +27,18 @@ function escapeXml(str) {
 }
 
 async function executeCommand(command) {
-  const url = `http://${SOAP_HOST}:${SOAP_PORT}/`;
+  const host = process.env.SOAP_HOST || '127.0.0.1';
+  const port = process.env.SOAP_PORT || '7878';
+  const user = process.env.SOAP_USER || 'soap';
+  const pass = process.env.SOAP_PASS || 'soap';
+
+  const url = `http://${host}:${port}/`;
   const envelope = buildEnvelope(command);
 
   try {
     const resp = await axios.post(url, envelope, {
       headers: { 'Content-Type': 'text/xml; charset=utf-8' },
-      auth: { username: SOAP_USER, password: SOAP_PASS },
+      auth: { username: user, password: pass },
       timeout: 5000,
     });
 

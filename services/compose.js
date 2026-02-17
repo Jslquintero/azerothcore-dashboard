@@ -1,29 +1,18 @@
 const fs = require('fs');
 const path = require('path');
 
-const PROJECT_ROOT = process.env.AC_PROJECT_ROOT;
-const OVERRIDE_PATH = path.join(PROJECT_ROOT, 'docker-compose.override.yml');
+function getOverridePath() {
+  const root = process.env.AC_PROJECT_ROOT || '';
+  return path.join(root, 'docker-compose.override.yml');
+}
 
 /**
  * Parse the docker-compose.override.yml into structured sections.
  * Preserves comments, grouping, and inline hints.
- *
- * Returns: {
- *   sections: [
- *     {
- *       name: "Individual Progression",
- *       vars: [
- *         { key: "AC_EXPANSION", value: "2", hint: "0,1,2", type: "number" },
- *         { key: "AC_ENABLE_PLAYER_SETTINGS", value: "1", hint: "", type: "toggle" },
- *       ]
- *     },
- *     ...
- *   ],
- *   raw: "<full file contents>"
- * }
  */
 function parseOverride() {
-  const raw = fs.readFileSync(OVERRIDE_PATH, 'utf-8');
+  const overridePath = getOverridePath();
+  const raw = fs.readFileSync(overridePath, 'utf-8');
   const lines = raw.split('\n');
 
   const sections = [];
@@ -62,8 +51,6 @@ function parseOverride() {
     }
 
     // Environment variable line: AC_VAR: "value" # optional comment
-    //   Also handles: AC_VAR:  "value" #hint
-    //   And commented-out vars: #AC_VAR: "value"
     const varMatch = trimmed.match(
       /^(#?)([A-Z][A-Z0-9_]+):\s*"([^"]*)"(?:\s*#(.*))?$/
     );
@@ -112,7 +99,8 @@ function parseOverride() {
  * @param {Object} updates - { "AC_VAR": "newValue", ... }
  */
 function saveOverride(updates) {
-  const raw = fs.readFileSync(OVERRIDE_PATH, 'utf-8');
+  const overridePath = getOverridePath();
+  const raw = fs.readFileSync(overridePath, 'utf-8');
   const lines = raw.split('\n');
   const result = [];
 
@@ -137,7 +125,7 @@ function saveOverride(updates) {
     result.push(line);
   }
 
-  fs.writeFileSync(OVERRIDE_PATH, result.join('\n'), 'utf-8');
+  fs.writeFileSync(overridePath, result.join('\n'), 'utf-8');
 }
 
 module.exports = { parseOverride, saveOverride };

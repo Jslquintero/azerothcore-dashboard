@@ -17,7 +17,7 @@ const $realmStatus   = document.getElementById('realmStatus');
 const $configSections = document.getElementById('configSections');
 const $configStatus  = document.getElementById('configStatus');
 const $btnSaveConfig = document.getElementById('btnSaveConfig');
-const $btnResetConfig = document.getElementById('btnResetConfig');
+const $btnRefreshConfig = document.getElementById('btnRefreshConfig');
 
 const MAX_LOG_LINES = 500;
 const FRIENDLY_NAMES = {
@@ -39,6 +39,7 @@ document.querySelectorAll('.tab').forEach(tab => {
 
     if (tab.dataset.tab === 'realm') loadRealmlist();
     if (tab.dataset.tab === 'config') loadConfig();
+    if (tab.dataset.tab === 'settings') loadSettings();
   });
 });
 
@@ -425,7 +426,7 @@ $btnSaveConfig.addEventListener('click', async () => {
   }
 });
 
-$btnResetConfig.addEventListener('click', () => {
+$btnRefreshConfig.addEventListener('click', () => {
   loadConfig();
 });
 
@@ -450,6 +451,58 @@ window.api.onCrash((svc) => {
 window.api.onRecovery((svc) => {
   const friendly = FRIENDLY_NAMES[svc.name] || svc.name;
   appendConsole(`[RECOVERY] ${friendly} is running again.\n`);
+});
+
+// ── Settings tab ────────────────────────────────────────────────────────────
+const $settingsStatus = document.getElementById('settingsStatus');
+
+async function loadSettings() {
+  const s = await window.api.getSettings();
+  document.getElementById('settAcProjectRoot').value = s.acProjectRoot || '';
+  document.getElementById('settSoapHost').value = s.soapHost || '127.0.0.1';
+  document.getElementById('settSoapPort').value = s.soapPort || '7878';
+  document.getElementById('settSoapUser').value = s.soapUser || 'soap';
+  document.getElementById('settSoapPass').value = s.soapPass || 'soap';
+  document.getElementById('settDbHost').value = s.dbHost || '127.0.0.1';
+  document.getElementById('settDbPort').value = s.dbPort || '3306';
+  document.getElementById('settDbUser').value = s.dbUser || 'root';
+  document.getElementById('settDbPass').value = s.dbPass || 'password';
+}
+
+document.getElementById('settBtnBrowse').addEventListener('click', async () => {
+  const result = await window.api.browseFolder();
+  if (result) {
+    document.getElementById('settAcProjectRoot').value = result;
+  }
+});
+
+document.getElementById('btnSaveSettings').addEventListener('click', async () => {
+  const newSettings = {
+    acProjectRoot: document.getElementById('settAcProjectRoot').value.trim(),
+    soapHost: document.getElementById('settSoapHost').value.trim(),
+    soapPort: document.getElementById('settSoapPort').value.trim(),
+    soapUser: document.getElementById('settSoapUser').value.trim(),
+    soapPass: document.getElementById('settSoapPass').value,
+    dbHost: document.getElementById('settDbHost').value.trim(),
+    dbPort: document.getElementById('settDbPort').value.trim(),
+    dbUser: document.getElementById('settDbUser').value.trim(),
+    dbPass: document.getElementById('settDbPass').value,
+  };
+
+  if (!newSettings.acProjectRoot) {
+    $settingsStatus.textContent = 'Project root is required.';
+    $settingsStatus.className = 'realm-status error';
+    return;
+  }
+
+  try {
+    await window.api.saveSettings(newSettings);
+    $settingsStatus.textContent = 'Settings saved successfully.';
+    $settingsStatus.className = 'realm-status success';
+  } catch (err) {
+    $settingsStatus.textContent = 'Failed to save: ' + err.message;
+    $settingsStatus.className = 'realm-status error';
+  }
 });
 
 // ── Initial load ─────────────────────────────────────────────────────────────

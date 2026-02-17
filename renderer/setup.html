@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <title>AzerothCore Dashboard - Setup</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { display: flex; justify-content: center; align-items: flex-start; padding-top: 40px; }
+    .setup-container { max-width: 560px; width: 100%; }
+    .setup-container h1 { color: var(--gold); font-size: 1.5rem; margin-bottom: 4px; }
+    .setup-container .subtitle { color: var(--text-muted); font-size: 0.85rem; display: block; margin-bottom: 24px; }
+    .setup-group { margin-bottom: 20px; }
+    .setup-group h2 { color: var(--gold); font-size: 0.95rem; margin-bottom: 10px; border-bottom: 1px solid var(--gold-dim); padding-bottom: 6px; }
+    .setup-row { display: flex; gap: 10px; margin-bottom: 8px; }
+    .setup-field { flex: 1; }
+    .setup-field label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 3px; }
+    .setup-field input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--gold-dim);
+      border-radius: var(--radius);
+      padding: 8px 10px;
+      color: var(--text);
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .setup-field input:focus { border-color: var(--gold); }
+    .setup-field .browse-row { display: flex; gap: 6px; }
+    .setup-field .browse-row input { flex: 1; }
+    .setup-actions { display: flex; gap: 10px; margin-top: 24px; }
+    .setup-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+    .setup-error { color: var(--red); font-size: 0.82rem; margin-top: 10px; min-height: 1.2em; }
+  </style>
+</head>
+<body>
+  <div class="setup-container">
+    <h1>AzerothCore Dashboard</h1>
+    <span class="subtitle">First-time setup - configure your server connection</span>
+
+    <div class="setup-group">
+      <h2>AzerothCore Location</h2>
+      <div class="setup-field">
+        <label>Project Root (where docker-compose.yml lives)</label>
+        <div class="browse-row">
+          <input type="text" id="acProjectRoot" placeholder="/path/to/azerothcore-wotlk">
+          <button class="btn btn-secondary" id="btnBrowse">Browse</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="setup-group">
+      <h2>SOAP Connection</h2>
+      <p class="setup-hint">Used for GM commands, player count, and uptime. Leave defaults if unsure.</p>
+      <div class="setup-row">
+        <div class="setup-field">
+          <label>Host</label>
+          <input type="text" id="soapHost" value="127.0.0.1">
+        </div>
+        <div class="setup-field">
+          <label>Port</label>
+          <input type="text" id="soapPort" value="7878">
+        </div>
+      </div>
+      <div class="setup-row">
+        <div class="setup-field">
+          <label>Username</label>
+          <input type="text" id="soapUser" value="soap">
+        </div>
+        <div class="setup-field">
+          <label>Password</label>
+          <input type="text" id="soapPass" value="soap">
+        </div>
+      </div>
+    </div>
+
+    <div class="setup-group">
+      <h2>MySQL Connection</h2>
+      <p class="setup-hint">Used for realm settings. Leave defaults if using the standard Docker setup.</p>
+      <div class="setup-row">
+        <div class="setup-field">
+          <label>Host</label>
+          <input type="text" id="dbHost" value="127.0.0.1">
+        </div>
+        <div class="setup-field">
+          <label>Port</label>
+          <input type="text" id="dbPort" value="3306">
+        </div>
+      </div>
+      <div class="setup-row">
+        <div class="setup-field">
+          <label>Username</label>
+          <input type="text" id="dbUser" value="root">
+        </div>
+        <div class="setup-field">
+          <label>Password</label>
+          <input type="text" id="dbPass" value="password">
+        </div>
+      </div>
+    </div>
+
+    <div class="setup-error" id="setupError"></div>
+
+    <div class="setup-actions">
+      <button class="btn btn-primary" id="btnSave">Save & Launch</button>
+    </div>
+  </div>
+
+  <script src="setup.js"></script>
+</body>
+</html>

@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const {
   app,
   BrowserWindow,
@@ -8,8 +6,10 @@ const {
   ipcMain,
   Notification,
   nativeImage,
+  dialog,
 } = require('electron');
 const path = require('path');
+const settings = require('./services/settings');
 const docker = require('./services/docker');
 const soap = require('./services/soap');
 const monitor = require('./services/monitor');
@@ -49,7 +49,10 @@ function createWindow() {
     },
   });
 
-  mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'));
+  // Decide which page to show
+  const page = settings.exists() ? 'index.html' : 'setup.html';
+  mainWindow.loadFile(path.join(__dirname, 'renderer', page));
+
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
     mainWindow.focus();
@@ -63,6 +66,12 @@ function createWindow() {
       mainWindow.hide();
     }
   });
+}
+
+function navigateTo(page) {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.loadFile(path.join(__dirname, 'renderer', page));
+  }
 }
 
 // ── Tray ─────────────────────────────────────────────────────────────────────
@@ -141,6 +150,33 @@ function notifyAutoRestart(svc) {
 
 // ── IPC handlers ─────────────────────────────────────────────────────────────
 function registerIPC() {
+  // Settings / Setup
+  ipcMain.handle('settings:get', () => settings.getAll());
+  ipcMain.handle('settings:save', (_, newSettings) => {
+    const merged = settings.save(newSettings);
+
+    // Reset the database pool so it picks up new credentials
+    database.close();
+
+    // If we were on setup page, navigate to dashboard and start monitor
+    navigateTo('index.html');
+    if (!monitor.isRunning()) {
+      monitor.start();
+    }
+
+    return { ok: true };
+  });
+
+  ipcMain.handle('dialog:openFolder', async () => {
+    const result = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory'],
+      title: 'Select AzerothCore Project Root',
+    });
+    if (result.canceled || !result.filePaths.length) return null;
+    return result.filePaths[0];
+  });
+
+  // Docker controls
   ipcMain.handle('docker:statuses', () => docker.getServiceStatuses());
   ipcMain.handle('docker:start', (_, name) => docker.startService(name));
   ipcMain.handle('docker:stop', (_, name) => docker.stopService(name));
@@ -224,11 +260,20 @@ function wireMonitor() {
 // ── App lifecycle ────────────────────────────────────────────────────────────
 app.whenReady().then(() => {
   console.log('App ready, creating tray and window...');
+
+  // Load saved settings into process.env (if they exist)
+  const hasSettings = settings.init();
+
   createTray();
   createWindow();
   registerIPC();
   wireMonitor();
-  monitor.start();
+
+  // Only start the monitor if settings are already configured
+  if (hasSettings) {
+    monitor.start();
+  }
+
   console.log('Initialization complete.');
 }).catch(err => {
   console.error('Startup error:', err);

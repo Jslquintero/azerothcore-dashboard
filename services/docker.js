@@ -1,16 +1,20 @@
 const { execFile, spawn } = require('child_process');
-const path = require('path');
-
-const PROJECT_ROOT = process.env.AC_PROJECT_ROOT;
 
 const SERVICES = ['ac-database', 'ac-worldserver', 'ac-authserver'];
 
+function getProjectRoot() {
+  return process.env.AC_PROJECT_ROOT || '';
+}
+
 function dockerCompose(args, opts = {}) {
   return new Promise((resolve, reject) => {
+    const cwd = getProjectRoot();
+    if (!cwd) return reject(new Error('AC_PROJECT_ROOT is not set'));
+
     const child = execFile(
       'docker',
       ['compose', ...args],
-      { cwd: PROJECT_ROOT, timeout: 120000, ...opts },
+      { cwd, timeout: 120000, ...opts },
       (err, stdout, stderr) => {
         if (err) return reject(err);
         resolve(stdout.trim());
@@ -66,8 +70,14 @@ async function stopAll() {
 }
 
 function streamLogs(serviceName, onData, onError) {
+  const cwd = getProjectRoot();
+  if (!cwd) {
+    onError('AC_PROJECT_ROOT is not set');
+    return null;
+  }
+
   const child = spawn('docker', ['compose', 'logs', '-f', '--tail', '100', serviceName], {
-    cwd: PROJECT_ROOT,
+    cwd,
   });
 
   child.stdout.on('data', chunk => onData(chunk.toString()));

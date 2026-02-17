@@ -558,6 +558,25 @@ body {
   margin-left: 8px;
 }
 
+/* ── Settings tab ────────────────────────────────────────────────────────── */
+.settings-group {
+  margin-bottom: 20px;
+}
+.settings-group-title {
+  color: var(--gold);
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 8px 0;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--gold-dim);
+}
+.settings-group label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+}
+
 /* ── Scrollbar ────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-dark); }

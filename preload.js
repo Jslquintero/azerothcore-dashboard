@@ -1,6 +1,11 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
+  // Settings / Setup
+  getSettings: () => ipcRenderer.invoke('settings:get'),
+  saveSettings: (s) => ipcRenderer.invoke('settings:save', s),
+  browseFolder: () => ipcRenderer.invoke('dialog:openFolder'),
+
   // Docker controls
   getStatuses: () => ipcRenderer.invoke('docker:statuses'),
   startService: (name) => ipcRenderer.invoke('docker:start', name),
