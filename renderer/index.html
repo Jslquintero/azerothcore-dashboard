@@ -32,6 +32,7 @@
     <button class="tab active" data-tab="services">Services</button>
     <button class="tab" data-tab="console">Console</button>
     <button class="tab" data-tab="logs">Logs</button>
+    <button class="tab" data-tab="config">Config</button>
     <button class="tab" data-tab="realm">Realm Settings</button>
   </nav>
 
@@ -76,6 +77,20 @@
         <button class="btn btn-secondary" id="btnClearLogs">Clear</button>
       </div>
       <div class="log-output" id="logOutput"></div>
+    </section>
+  </div>
+
+  <!-- ═══ Tab: Config ═══ -->
+  <div class="tab-content" id="tab-config">
+    <section class="panel">
+      <h2>Server Configuration</h2>
+      <p class="panel-hint">Edit <code>docker-compose.override.yml</code> environment variables. Restart the worldserver for changes to take effect.</p>
+      <div id="configSections"></div>
+      <div class="config-footer">
+        <button class="btn btn-primary" id="btnSaveConfig">Save Changes</button>
+        <button class="btn btn-secondary" id="btnResetConfig">Reset</button>
+        <span id="configStatus" class="realm-status"></span>
+      </div>
     </section>
   </div>
 

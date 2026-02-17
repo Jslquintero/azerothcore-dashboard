@@ -12,8 +12,12 @@ const $logSelect   = document.getElementById('logServiceSelect');
 const $logOutput   = document.getElementById('logOutput');
 const $btnStopLogs = document.getElementById('btnStopLogs');
 const $btnClearLogs= document.getElementById('btnClearLogs');
-const $realmList   = document.getElementById('realmList');
-const $realmStatus = document.getElementById('realmStatus');
+const $realmList     = document.getElementById('realmList');
+const $realmStatus   = document.getElementById('realmStatus');
+const $configSections = document.getElementById('configSections');
+const $configStatus  = document.getElementById('configStatus');
+const $btnSaveConfig = document.getElementById('btnSaveConfig');
+const $btnResetConfig = document.getElementById('btnResetConfig');
 
 const MAX_LOG_LINES = 500;
 const FRIENDLY_NAMES = {
@@ -34,6 +38,7 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
 
     if (tab.dataset.tab === 'realm') loadRealmlist();
+    if (tab.dataset.tab === 'config') loadConfig();
   });
 });
 
@@ -324,6 +329,104 @@ $realmList.addEventListener('click', async (e) => {
   } else if (btn.dataset.realmAction === 'reset') {
     await loadRealmlist();
   }
+});
+
+// ── Config editor ────────────────────────────────────────────────────────────
+async function loadConfig() {
+  $configStatus.textContent = '';
+  $configStatus.className = 'realm-status';
+
+  try {
+    const data = await window.api.parseCompose();
+    renderConfig(data.sections);
+  } catch (err) {
+    $configSections.innerHTML = '';
+    $configStatus.textContent = 'Failed to load config: ' + err.message;
+    $configStatus.className = 'realm-status error';
+  }
+}
+
+function renderConfig(sections) {
+  $configSections.innerHTML = sections.map(section => {
+    const varsHtml = section.vars.map(v => {
+      let controlHtml;
+
+      if (v.type === 'toggle') {
+        const checked = v.value === '1' ? 'checked' : '';
+        controlHtml = `
+          <input type="checkbox" class="config-toggle" data-config-key="${v.key}" ${checked}>
+          <span class="config-toggle-label">${v.value === '1' ? 'ON' : 'OFF'}</span>
+        `;
+      } else if (v.type === 'number') {
+        controlHtml = `
+          <input type="number" class="config-input" data-config-key="${v.key}" value="${escapeHtml(v.value)}">
+        `;
+      } else {
+        controlHtml = `
+          <input type="text" class="config-input wide" data-config-key="${v.key}" value="${escapeHtml(v.value)}">
+        `;
+      }
+
+      const hintHtml = v.hint ? `<span class="config-hint">(${escapeHtml(v.hint)})</span>` : '';
+
+      return `
+        <div class="config-row">
+          <span class="config-key">${v.key}</span>
+          <div class="config-control">
+            ${controlHtml}
+            ${hintHtml}
+          </div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="config-section">
+        <div class="config-section-header">${escapeHtml(section.name)}</div>
+        <div class="config-vars">${varsHtml}</div>
+      </div>`;
+  }).join('');
+}
+
+// Update toggle label when checkbox changes
+$configSections.addEventListener('change', (e) => {
+  if (e.target.classList.contains('config-toggle')) {
+    const label = e.target.nextElementSibling;
+    if (label && label.classList.contains('config-toggle-label')) {
+      label.textContent = e.target.checked ? 'ON' : 'OFF';
+    }
+  }
+});
+
+// Collect all values from the config form
+function collectConfigValues() {
+  const updates = {};
+
+  $configSections.querySelectorAll('[data-config-key]').forEach(el => {
+    const key = el.dataset.configKey;
+    if (el.type === 'checkbox') {
+      updates[key] = el.checked ? '1' : '0';
+    } else {
+      updates[key] = el.value;
+    }
+  });
+
+  return updates;
+}
+
+$btnSaveConfig.addEventListener('click', async () => {
+  const updates = collectConfigValues();
+  try {
+    await window.api.saveCompose(updates);
+    $configStatus.textContent = 'Configuration saved. Restart the worldserver for changes to take effect.';
+    $configStatus.className = 'realm-status success';
+  } catch (err) {
+    $configStatus.textContent = 'Failed to save: ' + err.message;
+    $configStatus.className = 'realm-status error';
+  }
+});
+
+$btnResetConfig.addEventListener('click', () => {
+  loadConfig();
 });
 
 // ── Monitor events ───────────────────────────────────────────────────────────

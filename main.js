@@ -15,6 +15,7 @@ const soap = require('./services/soap');
 const monitor = require('./services/monitor');
 const logStream = require('./services/logStream');
 const database = require('./services/database');
+const compose = require('./services/compose');
 
 let tray = null;
 let mainWindow = null;
@@ -180,6 +181,10 @@ function registerIPC() {
   // Database / Realm settings
   ipcMain.handle('db:getRealmlist', () => database.getRealmlist());
   ipcMain.handle('db:updateRealm', (_, id, fields) => database.updateRealm(id, fields));
+
+  // Docker Compose override editor
+  ipcMain.handle('compose:parse', () => compose.parseOverride());
+  ipcMain.handle('compose:save', (_, updates) => compose.saveOverride(updates));
 }
 
 // ── Monitor events → renderer ────────────────────────────────────────────────

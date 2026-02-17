@@ -440,6 +440,124 @@ body {
 .realm-status.success { color: var(--green); }
 .realm-status.error   { color: var(--red); }
 
+/* ── Config Editor ────────────────────────────────────────────────────────── */
+.config-section {
+  margin-bottom: 18px;
+}
+
+.config-section-header {
+  color: var(--gold);
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 8px 0;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--gold-dim);
+}
+
+.config-vars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.config-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  background: var(--bg-card);
+}
+.config-row:hover {
+  background: #1a2744;
+}
+
+.config-key {
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.78rem;
+  color: var(--text);
+  min-width: 320px;
+  flex-shrink: 0;
+}
+
+.config-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+/* Checkbox toggle for 0/1 values */
+.config-toggle {
+  appearance: none;
+  width: 38px;
+  height: 20px;
+  background: var(--red);
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.config-toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.config-toggle:checked {
+  background: var(--green);
+}
+.config-toggle:checked::after {
+  transform: translateX(18px);
+}
+
+.config-toggle-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  min-width: 20px;
+}
+
+/* Number / text inputs */
+.config-input {
+  background: var(--bg-input);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 5px 10px;
+  color: var(--text);
+  font-size: 0.82rem;
+  width: 100px;
+  outline: none;
+}
+.config-input:focus {
+  border-color: var(--gold);
+}
+.config-input.wide {
+  width: 200px;
+}
+
+.config-hint {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.config-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gold-dim);
+}
+
+.config-footer .realm-status {
+  margin-left: 8px;
+}
+
 /* ── Scrollbar ────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-dark); }

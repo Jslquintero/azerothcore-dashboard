@@ -21,6 +21,10 @@ contextBridge.exposeInMainWorld('api', {
   getRealmlist: () => ipcRenderer.invoke('db:getRealmlist'),
   updateRealm: (id, fields) => ipcRenderer.invoke('db:updateRealm', id, fields),
 
+  // Docker Compose override editor
+  parseCompose: () => ipcRenderer.invoke('compose:parse'),
+  saveCompose: (updates) => ipcRenderer.invoke('compose:save', updates),
+
   // Log streaming
   startLogs: (serviceName) => ipcRenderer.send('logs:start', serviceName),
   stopLogs: () => ipcRenderer.send('logs:stop'),
