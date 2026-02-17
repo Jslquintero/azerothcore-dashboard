@@ -3,8 +3,46 @@
   "version": "1.0.0",
   "description": "System tray dashboard for AzerothCore server management",
   "main": "main.js",
+  "author": {
+    "name": "AzerothCore",
+    "email": "info@azerothcore.org"
+  },
+  "homepage": "https://github.com/azerothcore",
+  "license": "MIT",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "electron-builder --linux",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:all": "electron-builder --linux --win"
+  },
+  "build": {
+    "appId": "com.azerothcore.dashboard",
+    "productName": "AzerothCore Dashboard",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "services/**/*",
+      "assets/**/*",
+      "node_modules/**/*"
+    ],
+    "linux": {
+      "target": ["AppImage"],
+      "icon": "assets/icon-256.png",
+      "category": "Utility"
+    },
+    "win": {
+      "target": ["nsis"],
+      "icon": "assets/icon-256.png"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "icon": "assets/icon-256.png"
+    }
   },
   "dependencies": {
     "axios": "^1.7.0",
@@ -12,6 +50,7 @@
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
-    "electron": "^33.0.0"
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
   }
 }
