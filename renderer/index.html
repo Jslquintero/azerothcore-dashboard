@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <title>AzerothCore Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <h1>AzerothCore</h1>
+      <span class="subtitle">Server Dashboard</span>
+    </div>
+    <div class="header-right">
+      <div class="info-badge" id="playerCount" title="Connected players">
+        <span class="info-label">Players</span>
+        <span class="info-value" id="playerNum">--</span>
+      </div>
+      <div class="info-badge" id="uptimeDisplay" title="Server uptime">
+        <span class="info-label">Uptime</span>
+        <span class="info-value" id="uptimeText">--</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tab bar -->
+  <nav class="tab-bar">
+    <button class="tab active" data-tab="services">Services</button>
+    <button class="tab" data-tab="console">Console</button>
+    <button class="tab" data-tab="logs">Logs</button>
+    <button class="tab" data-tab="realm">Realm Settings</button>
+  </nav>
+
+  <!-- ═══ Tab: Services ═══ -->
+  <div class="tab-content active" id="tab-services">
+    <div class="toolbar">
+      <button class="btn btn-start" id="btnStartAll">Start All</button>
+      <button class="btn btn-stop" id="btnStopAll">Stop All</button>
+      <label class="toggle-label" title="Auto-restart crashed services">
+        <input type="checkbox" id="autoRestartToggle">
+        <span class="toggle-slider"></span>
+        Auto-Restart
+      </label>
+    </div>
+    <section class="services" id="serviceCards"></section>
+  </div>
+
+  <!-- ═══ Tab: Console ═══ -->
+  <div class="tab-content" id="tab-console">
+    <section class="panel">
+      <h2>Server Console</h2>
+      <div class="console-output" id="consoleOutput"></div>
+      <form class="console-input" id="consoleForm">
+        <input type="text" id="consoleCmd" placeholder="Type a GM command (e.g. .server info)" autocomplete="off">
+        <button type="submit" class="btn btn-primary">Send</button>
+      </form>
+    </section>
+  </div>
+
+  <!-- ═══ Tab: Logs ═══ -->
+  <div class="tab-content" id="tab-logs">
+    <section class="panel">
+      <h2>Log Viewer</h2>
+      <div class="log-controls">
+        <select id="logServiceSelect">
+          <option value="">-- Select service --</option>
+          <option value="ac-database">Database</option>
+          <option value="ac-worldserver">Worldserver</option>
+          <option value="ac-authserver">Authserver</option>
+        </select>
+        <button class="btn btn-secondary" id="btnStopLogs">Stop</button>
+        <button class="btn btn-secondary" id="btnClearLogs">Clear</button>
+      </div>
+      <div class="log-output" id="logOutput"></div>
+    </section>
+  </div>
+
+  <!-- ═══ Tab: Realm Settings ═══ -->
+  <div class="tab-content" id="tab-realm">
+    <section class="panel">
+      <h2>Realm Settings</h2>
+      <p class="panel-hint">Edit realm name and address in the <code>realmlist</code> table. Changes take effect on next server restart.</p>
+      <div id="realmList"></div>
+      <div id="realmStatus" class="realm-status"></div>
+    </section>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

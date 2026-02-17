@@ -1,0 +1,447 @@
+/* ── Reset & Base ──────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-dark:    #0d0d1a;
+  --bg-panel:   #1a1a2e;
+  --bg-card:    #16213e;
+  --bg-input:   #0f3460;
+  --gold:       #c9a84c;
+  --gold-dim:   #8a6d2b;
+  --green:      #4ecca3;
+  --red:        #e74c3c;
+  --yellow:     #f1c40f;
+  --text:       #e0e0e0;
+  --text-muted: #7f8c8d;
+  --radius:     8px;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg-dark);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 0 20px 20px;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 2px solid var(--gold-dim);
+}
+
+.header h1 {
+  color: var(--gold);
+  font-size: 1.6rem;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-left: 10px;
+}
+
+.header-right {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.info-badge {
+  background: var(--bg-card);
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  border: 1px solid var(--gold-dim);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 80px;
+}
+
+.info-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+/* ── Tab Bar ──────────────────────────────────────────────────────────────── */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--gold-dim);
+  margin-bottom: 16px;
+}
+
+.tab {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  padding: 10px 22px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  margin-bottom: -2px;
+}
+.tab:hover {
+  color: var(--text);
+}
+.tab.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+/* ── Tab Content ──────────────────────────────────────────────────────────── */
+.tab-content {
+  display: none;
+}
+.tab-content.active {
+  display: block;
+}
+
+/* ── Toolbar ──────────────────────────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+.btn {
+  border: none;
+  padding: 8px 18px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: opacity 0.15s;
+}
+.btn:hover:not(:disabled) { opacity: 0.85; }
+.btn:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(0.5); }
+
+.btn-start   { background: var(--green); color: #000; }
+.btn-stop    { background: var(--red);   color: #fff; }
+.btn-primary { background: var(--gold);  color: #000; }
+.btn-secondary { background: var(--bg-input); color: var(--text); border: 1px solid var(--gold-dim); }
+
+.btn-sm {
+  padding: 5px 14px;
+  font-size: 0.78rem;
+}
+
+/* ── Toggle switch ────────────────────────────────────────────────────────── */
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-left: auto;
+  color: var(--text-muted);
+  user-select: none;
+}
+
+.toggle-label input { display: none; }
+
+.toggle-slider {
+  width: 36px;
+  height: 20px;
+  background: var(--bg-input);
+  border-radius: 10px;
+  position: relative;
+  transition: background 0.2s;
+}
+.toggle-slider::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  transition: transform 0.2s, background 0.2s;
+}
+.toggle-label input:checked + .toggle-slider {
+  background: var(--green);
+}
+.toggle-label input:checked + .toggle-slider::after {
+  transform: translateX(16px);
+  background: #fff;
+}
+
+/* ── Service Cards ────────────────────────────────────────────────────────── */
+.services {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.service-card {
+  background: var(--bg-card);
+  border: 2px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color 0.4s ease;
+}
+.service-card.state-running  { border-color: var(--green); }
+.service-card.state-exited   { border-color: var(--red); }
+.service-card.state-starting { border-color: var(--yellow); }
+
+.service-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.service-card .service-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--gold);
+}
+
+/* ── Status indicator ─────────────────────────────────────────────────────── */
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+.status-dot.running {
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green), 0 0 16px rgba(78, 204, 163, 0.3);
+}
+.status-dot.exited {
+  background: var(--red);
+  box-shadow: 0 0 8px var(--red), 0 0 16px rgba(231, 76, 60, 0.3);
+}
+.status-dot.starting {
+  background: var(--yellow);
+  box-shadow: 0 0 8px var(--yellow);
+  animation: pulse 1s ease-in-out infinite;
+}
+.status-dot.not-found {
+  background: var(--text-muted);
+  box-shadow: none;
+}
+
+.status-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.status-text.running   { color: var(--green); }
+.status-text.exited    { color: var(--red); }
+.status-text.starting  { color: var(--yellow); }
+.status-text.not-found { color: var(--text-muted); }
+
+/* ── Spinner ──────────────────────────────────────────────────────────────── */
+.spinner {
+  width: 14px; height: 14px;
+  border: 2px solid var(--gold-dim);
+  border-top-color: var(--yellow);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.service-card .card-status {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  min-height: 1em;
+}
+
+.service-card .card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+}
+
+/* ── Panels ───────────────────────────────────────────────────────────────── */
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.panel h2 {
+  color: var(--gold);
+  font-size: 1rem;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--gold-dim);
+  padding-bottom: 6px;
+}
+
+.panel-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+.panel-hint code {
+  color: var(--gold);
+  background: var(--bg-card);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* ── Console ──────────────────────────────────────────────────────────────── */
+.console-output {
+  background: #000;
+  color: #0f0;
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.82rem;
+  padding: 10px;
+  border-radius: var(--radius);
+  height: 420px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin-bottom: 8px;
+}
+
+.console-input {
+  display: flex;
+  gap: 8px;
+}
+
+.console-input input {
+  flex: 1;
+  background: var(--bg-input);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  color: var(--text);
+  font-size: 0.85rem;
+  outline: none;
+}
+.console-input input:focus {
+  border-color: var(--gold);
+}
+
+/* ── Log Viewer ───────────────────────────────────────────────────────────── */
+.log-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.log-controls select {
+  background: var(--bg-input);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  color: var(--text);
+  font-size: 0.85rem;
+  outline: none;
+}
+.log-controls select:focus { border-color: var(--gold); }
+
+.log-output {
+  background: #000;
+  color: #ccc;
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.78rem;
+  padding: 10px;
+  border-radius: var(--radius);
+  height: 420px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* ── Realm Settings ───────────────────────────────────────────────────────── */
+.realm-card {
+  background: var(--bg-card);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.realm-card .realm-id {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.realm-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.realm-field label {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.realm-field input {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 7px 10px;
+  color: var(--text);
+  font-size: 0.85rem;
+  outline: none;
+}
+.realm-field input:focus {
+  border-color: var(--gold);
+}
+
+.realm-card .realm-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.realm-status {
+  font-size: 0.85rem;
+  min-height: 1.2em;
+}
+.realm-status.success { color: var(--green); }
+.realm-status.error   { color: var(--red); }
+
+/* ── Scrollbar ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
