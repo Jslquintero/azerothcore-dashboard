@@ -1,6 +1,6 @@
 {
   "name": "azerothcore-dashboard",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "System tray dashboard for AzerothCore server management",
   "main": "main.js",
   "author": {
