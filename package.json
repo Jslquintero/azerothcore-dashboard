@@ -22,7 +22,7 @@
     "productName": "AzerothCore Dashboard",
     "publish": {
       "provider": "github",
-      "owner": "azerothcore",
+      "owner": "Jslquintero",
       "repo": "azerothcore-dashboard"
     },
     "directories": {
@@ -53,7 +53,7 @@
       "target": [
         "dmg"
       ],
-      "icon": "assets/icon-256.png"
+      "icon": "assets/icon-512.png"
     }
   },
   "dependencies": {

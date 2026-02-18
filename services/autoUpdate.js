@@ -5,7 +5,7 @@ const path = require('path');
 // Configure autoUpdater
 autoUpdater.setFeedURL({
   provider: 'github',
-  owner: 'azerothcore',
+  owner: 'Jslquintero',
   repo: 'azerothcore-dashboard'
 });
 
