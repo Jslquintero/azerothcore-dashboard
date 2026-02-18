@@ -39,6 +39,7 @@ document.querySelectorAll('.tab').forEach(tab => {
 
     if (tab.dataset.tab === 'realm') loadRealmlist();
     if (tab.dataset.tab === 'config') loadConfig();
+    if (tab.dataset.tab === 'modules') loadModules();
     if (tab.dataset.tab === 'settings') loadSettings();
   });
 });
@@ -451,6 +452,51 @@ window.api.onCrash((svc) => {
 window.api.onRecovery((svc) => {
   const friendly = FRIENDLY_NAMES[svc.name] || svc.name;
   appendConsole(`[RECOVERY] ${friendly} is running again.\n`);
+});
+
+// ── Modules tab ─────────────────────────────────────────────────────────────
+const $moduleList   = document.getElementById('moduleList');
+const $moduleReadme = document.getElementById('moduleReadme');
+
+async function loadModules() {
+  $moduleList.innerHTML = '<p style="color:var(--text-muted);padding:10px">Loading...</p>';
+
+  try {
+    const modules = await window.api.listModules();
+    if (!modules || modules.length === 0) {
+      $moduleList.innerHTML = '<p style="color:var(--text-muted);padding:10px">No modules found.</p>';
+      return;
+    }
+
+    $moduleList.innerHTML = modules.map(m =>
+      `<button class="modules-sidebar-item" data-dir="${m.dirName}">${m.displayName}</button>`
+    ).join('');
+  } catch (err) {
+    $moduleList.innerHTML = `<p style="color:var(--red);padding:10px">Failed to load modules: ${err.message}</p>`;
+  }
+}
+
+$moduleList.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.modules-sidebar-item');
+  if (!btn) return;
+
+  // Highlight active item
+  $moduleList.querySelectorAll('.modules-sidebar-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const dirName = btn.dataset.dir;
+  $moduleReadme.innerHTML = '<p class="panel-hint">Loading...</p>';
+
+  try {
+    const result = await window.api.getModuleReadme(dirName);
+    if (result.html) {
+      $moduleReadme.innerHTML = `<div class="markdown-body">${result.html}</div>`;
+    } else {
+      $moduleReadme.innerHTML = '<p class="panel-hint">No README found for this module.</p>';
+    }
+  } catch (err) {
+    $moduleReadme.innerHTML = `<p style="color:var(--red)">Failed to load README: ${err.message}</p>`;
+  }
 });
 
 // ── Settings tab ────────────────────────────────────────────────────────────

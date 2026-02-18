@@ -16,6 +16,7 @@ const monitor = require('./services/monitor');
 const logStream = require('./services/logStream');
 const database = require('./services/database');
 const compose = require('./services/compose');
+const modules = require('./services/modules');
 
 let tray = null;
 let mainWindow = null;
@@ -221,6 +222,10 @@ function registerIPC() {
   // Docker Compose override editor
   ipcMain.handle('compose:parse', () => compose.parseOverride());
   ipcMain.handle('compose:save', (_, updates) => compose.saveOverride(updates));
+
+  // Modules
+  ipcMain.handle('modules:list', () => modules.listModules());
+  ipcMain.handle('modules:readme', (_, dirName) => modules.getModuleReadme(dirName));
 }
 
 // ── Monitor events → renderer ────────────────────────────────────────────────

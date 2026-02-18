@@ -30,6 +30,10 @@ contextBridge.exposeInMainWorld('api', {
   parseCompose: () => ipcRenderer.invoke('compose:parse'),
   saveCompose: (updates) => ipcRenderer.invoke('compose:save', updates),
 
+  // Modules
+  listModules: () => ipcRenderer.invoke('modules:list'),
+  getModuleReadme: (dirName) => ipcRenderer.invoke('modules:readme', dirName),
+
   // Log streaming
   startLogs: (serviceName) => ipcRenderer.send('logs:start', serviceName),
   stopLogs: () => ipcRenderer.send('logs:stop'),

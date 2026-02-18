@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data: https:">
   <title>AzerothCore Dashboard</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -34,6 +34,7 @@
     <button class="tab" data-tab="logs">Logs</button>
     <button class="tab" data-tab="config">Config</button>
     <button class="tab" data-tab="realm">Realm Settings</button>
+    <button class="tab" data-tab="modules">Modules</button>
     <button class="tab" data-tab="settings">Settings</button>
   </nav>
 
@@ -103,6 +104,16 @@
       <div id="realmList"></div>
       <div id="realmStatus" class="realm-status"></div>
     </section>
+  </div>
+
+  <!-- ═══ Tab: Modules ═══ -->
+  <div class="tab-content" id="tab-modules">
+    <div class="modules-layout">
+      <aside class="modules-sidebar" id="moduleList"></aside>
+      <section class="modules-body panel" id="moduleReadme">
+        <p class="panel-hint">Select a module to view its README.</p>
+      </section>
+    </div>
   </div>
 
   <!-- ═══ Tab: Settings ═══ -->

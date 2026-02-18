@@ -31,21 +31,28 @@
       "node_modules/**/*"
     ],
     "linux": {
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "icon": "assets/icon-256.png",
       "category": "Utility"
     },
     "win": {
-      "target": ["nsis"],
+      "target": [
+        "nsis"
+      ],
       "icon": "assets/icon-256.png"
     },
     "mac": {
-      "target": ["dmg"],
+      "target": [
+        "dmg"
+      ],
       "icon": "assets/icon-256.png"
     }
   },
   "dependencies": {
     "axios": "^1.7.0",
+    "marked": "^4.3.0",
     "mysql2": "^3.11.0",
     "xml2js": "^0.6.2"
   },
