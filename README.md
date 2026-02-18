@@ -4,7 +4,7 @@
 
 A system tray dashboard for managing your AzerothCore server. Built with Electron, it provides a convenient GUI to monitor and control your AzerothCore Docker services without touching the terminal.
 
-![Main Dashboard](assets/screenshot-01.png)
+![Main Dashboard](assets/screenshot-07.png)
 
 ## Features
 
@@ -20,22 +20,22 @@ A system tray dashboard for managing your AzerothCore server. Built with Electro
 
 ## Screenshots
 
-![Services Tab](assets/screenshot-02.png)
+![Services Tab](assets/screenshot-07.png)
 *Manage all your AzerothCore services from one place*
 
-![Console](assets/screenshot-03.png)
+![Console](assets/screenshot-06.png)
 *Execute GM commands directly*
 
-![Logs Viewer](assets/screenshot-04.png)
+![Logs Viewer](assets/screenshot-05.png)
 *View real-time logs from any service*
 
-![Configuration](assets/screenshot-05.png)
+![Configuration](assets/screenshot-04.png)
 *Edit server configuration through the UI*
 
-![Realm Settings](assets/screenshot-06.png)
+![Realm Settings](assets/screenshot-03.png)
 *Manage your realm settings*
 
-![Settings](assets/screenshot-07.png)
+![Settings](assets/screenshot-01.png)
 *Configure your connection settings*
 
 ## Requirements

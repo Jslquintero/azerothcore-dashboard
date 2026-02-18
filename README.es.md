@@ -4,7 +4,7 @@
 
 Un dashboard de bandeja del sistema para administrar tu servidor AzerothCore. Construido con Electron, proporciona una interfaz gráfica conveniente para monitorear y controlar tus servicios Docker de AzerothCore sin tocar la terminal.
 
-![Dashboard Principal](assets/screenshot-01.png)
+![Dashboard Principal](assets/screenshot-07.png)
 
 ## Características
 
@@ -20,22 +20,22 @@ Un dashboard de bandeja del sistema para administrar tu servidor AzerothCore. Co
 
 ## Capturas de Pantalla
 
-![Pestaña de Servicios](assets/screenshot-02.png)
+![Pestaña de Servicios](assets/screenshot-07.png)
 *Administra todos tus servicios de AzerothCore desde un solo lugar*
 
-![Consola](assets/screenshot-03.png)
+![Consola](assets/screenshot-06.png)
 *Ejecuta comandos de GM directamente*
 
-![Visor de Logs](assets/screenshot-04.png)
+![Visor de Logs](assets/screenshot-05.png)
 *Visualiza los logs en tiempo real de cualquier servicio*
 
-![Configuración](assets/screenshot-05.png)
+![Configuración](assets/screenshot-04.png)
 *Edita la configuración del servidor a través de la interfaz*
 
-![Configuración de Realm](assets/screenshot-06.png)
+![Configuración de Realm](assets/screenshot-03.png)
 *Administra la configuración de tu realm*
 
-![Ajustes](assets/screenshot-07.png)
+![Ajustes](assets/screenshot-01.png)
 *Configura tus parámetros de conexión*
 
 ## Requisitos
