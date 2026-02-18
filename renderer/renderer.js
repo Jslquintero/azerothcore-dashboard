@@ -553,6 +553,12 @@ document.getElementById('btnSaveSettings').addEventListener('click', async () =>
 
 // ── Initial load ─────────────────────────────────────────────────────────────
 (async () => {
+  // Display app version
+  try {
+    const version = await window.api.getAppVersion();
+    document.getElementById('appVersion').textContent = 'v' + version;
+  } catch {}
+
   try {
     const statuses = await window.api.getStatuses();
     lastStatuses = statuses;
@@ -561,3 +567,80 @@ document.getElementById('btnSaveSettings').addEventListener('click', async () =>
     $cards.innerHTML = '<p style="color:var(--red)">Failed to fetch service statuses.</p>';
   }
 })();
+
+// ── Auto-update ──────────────────────────────────────────────────────────────
+const $updateBanner = document.getElementById('updateBanner');
+const $updateText = document.getElementById('updateText');
+const $updateProgress = document.getElementById('updateProgress');
+const $progressFill = document.getElementById('progressFill');
+const $progressText = document.getElementById('progressText');
+const $btnInstallUpdate = document.getElementById('btnInstallUpdate');
+const $btnDismissUpdate = document.getElementById('btnDismissUpdate');
+
+let currentVersion = '--';
+
+// Store current version for update messages
+(async () => {
+  try {
+    currentVersion = await window.api.getAppVersion();
+  } catch {}
+})();
+
+function showUpdateBanner(message, canInstall = false) {
+  $updateText.textContent = message;
+  $updateBanner.style.display = 'block';
+  $btnInstallUpdate.style.display = canInstall ? 'inline-block' : 'none';
+}
+
+function hideUpdateBanner() {
+  $updateBanner.style.display = 'none';
+}
+
+function showDownloadProgress(progress) {
+  $updateProgress.style.display = 'block';
+  const percent = Math.round(progress.percent);
+  $progressFill.style.width = percent + '%';
+  $progressText.textContent = `Downloading... ${percent}% (${Math.round(progress.transferred / 1024 / 1024)}MB / ${Math.round(progress.total / 1024 / 1024)}MB)`;
+}
+
+function hideDownloadProgress() {
+  $updateProgress.style.display = 'none';
+}
+
+// Update event listeners
+window.api.onUpdateChecking(() => {
+  console.log('Checking for updates...');
+});
+
+window.api.onUpdateAvailable((info) => {
+  showUpdateBanner(`Update available: v${currentVersion} → v${info.version}`, false);
+});
+
+window.api.onUpdateNotAvailable(() => {
+  console.log('No updates available');
+});
+
+window.api.onUpdateProgress((progress) => {
+  showDownloadProgress(progress);
+});
+
+window.api.onUpdateDownloaded((info) => {
+  hideDownloadProgress();
+  showUpdateBanner(`v${info.version} ready to install! (currently v${currentVersion})`, true);
+});
+
+window.api.onUpdateError((err) => {
+  console.error('Update error:', err);
+  hideDownloadProgress();
+  hideUpdateBanner();
+});
+
+// Install update button
+$btnInstallUpdate.addEventListener('click', () => {
+  window.api.installUpdate();
+});
+
+// Dismiss update button
+$btnDismissUpdate.addEventListener('click', () => {
+  hideUpdateBanner();
+});

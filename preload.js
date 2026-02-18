@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld('api', {
   getSettings: () => ipcRenderer.invoke('settings:get'),
   saveSettings: (s) => ipcRenderer.invoke('settings:save', s),
   browseFolder: () => ipcRenderer.invoke('dialog:openFolder'),
+  getAppVersion: () => ipcRenderer.invoke('app:getVersion'),
 
   // Docker controls
   getStatuses: () => ipcRenderer.invoke('docker:statuses'),
@@ -34,6 +35,11 @@ contextBridge.exposeInMainWorld('api', {
   listModules: () => ipcRenderer.invoke('modules:list'),
   getModuleReadme: (dirName) => ipcRenderer.invoke('modules:readme', dirName),
 
+  // Auto-update
+  checkUpdate: () => ipcRenderer.invoke('update:check'),
+  getUpdateStatus: () => ipcRenderer.invoke('update:status'),
+  installUpdate: () => ipcRenderer.invoke('update:install'),
+
   // Log streaming
   startLogs: (serviceName) => ipcRenderer.send('logs:start', serviceName),
   stopLogs: () => ipcRenderer.send('logs:stop'),
@@ -45,4 +51,12 @@ contextBridge.exposeInMainWorld('api', {
   onRecovery: (cb) => ipcRenderer.on('monitor:recovery', (_, data) => cb(data)),
   onLogData: (cb) => ipcRenderer.on('logs:data', (_, data) => cb(data)),
   onLogError: (cb) => ipcRenderer.on('logs:error', (_, data) => cb(data)),
+
+  // Update events
+  onUpdateChecking: (cb) => ipcRenderer.on('update:checking', () => cb()),
+  onUpdateAvailable: (cb) => ipcRenderer.on('update:available', (_, data) => cb(data)),
+  onUpdateNotAvailable: (cb) => ipcRenderer.on('update:not-available', (_, data) => cb(data)),
+  onUpdateProgress: (cb) => ipcRenderer.on('update:progress', (_, data) => cb(data)),
+  onUpdateDownloaded: (cb) => ipcRenderer.on('update:downloaded', (_, data) => cb(data)),
+  onUpdateError: (cb) => ipcRenderer.on('update:error', (_, data) => cb(data)),
 });

@@ -1,6 +1,6 @@
 {
   "name": "azerothcore-dashboard",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "System tray dashboard for AzerothCore server management",
   "main": "main.js",
   "author": {
@@ -14,11 +14,17 @@
     "dist": "electron-builder --linux",
     "dist:win": "electron-builder --win",
     "dist:mac": "electron-builder --mac",
-    "dist:all": "electron-builder --linux --win"
+    "dist:all": "electron-builder --linux --win",
+    "release": "node scripts/release.js"
   },
   "build": {
     "appId": "com.azerothcore.dashboard",
     "productName": "AzerothCore Dashboard",
+    "publish": {
+      "provider": "github",
+      "owner": "azerothcore",
+      "repo": "azerothcore-dashboard"
+    },
     "directories": {
       "output": "dist"
     },
@@ -52,6 +58,7 @@
   },
   "dependencies": {
     "axios": "^1.7.0",
+    "electron-updater": "^6.7.3",
     "marked": "^4.3.0",
     "mysql2": "^3.11.0",
     "xml2js": "^0.6.2"

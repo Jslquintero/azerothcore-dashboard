@@ -14,6 +14,7 @@
     <div class="header-left">
       <h1>AzerothCore</h1>
       <span class="subtitle">Server Dashboard</span>
+      <span class="version-badge" id="appVersion" title="Current version">v--</span>
     </div>
     <div class="header-right">
       <div class="info-badge" id="playerCount" title="Connected players">
@@ -26,6 +27,22 @@
       </div>
     </div>
   </header>
+
+  <!-- Update notification banner -->
+  <div class="update-banner" id="updateBanner" style="display:none;">
+    <div class="update-banner-content">
+      <span class="update-icon">↓</span>
+      <span class="update-text" id="updateText">Update available</span>
+      <div class="update-actions">
+        <button class="btn btn-primary btn-sm" id="btnInstallUpdate">Install & Restart</button>
+        <button class="btn btn-secondary btn-sm" id="btnDismissUpdate">Dismiss</button>
+      </div>
+    </div>
+    <div class="update-progress" id="updateProgress" style="display:none;">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="progress-text" id="progressText">Downloading...</span>
+    </div>
+  </div>
 
   <!-- Tab bar -->
   <nav class="tab-bar">

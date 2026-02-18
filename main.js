@@ -8,6 +8,7 @@ const {
   nativeImage,
   dialog,
 } = require('electron');
+const { version } = require('./package.json');
 const path = require('path');
 const settings = require('./services/settings');
 const docker = require('./services/docker');
@@ -17,6 +18,7 @@ const logStream = require('./services/logStream');
 const database = require('./services/database');
 const compose = require('./services/compose');
 const modules = require('./services/modules');
+const autoUpdate = require('./services/autoUpdate');
 
 let tray = null;
 let mainWindow = null;
@@ -177,6 +179,9 @@ function registerIPC() {
     return result.filePaths[0];
   });
 
+  // App version
+  ipcMain.handle('app:getVersion', () => version);
+
   // Docker controls
   ipcMain.handle('docker:statuses', () => docker.getServiceStatuses());
   ipcMain.handle('docker:start', (_, name) => docker.startService(name));
@@ -226,6 +231,55 @@ function registerIPC() {
   // Modules
   ipcMain.handle('modules:list', () => modules.listModules());
   ipcMain.handle('modules:readme', (_, dirName) => modules.getModuleReadme(dirName));
+
+  // Auto-update
+  ipcMain.handle('update:check', async () => {
+    try {
+      return await autoUpdate.checkForUpdates(true);
+    } catch (err) {
+      return { error: err.message };
+    }
+  });
+
+  ipcMain.handle('update:status', () => autoUpdate.getUpdateStatus());
+
+  ipcMain.handle('update:install', () => {
+    autoUpdate.installAndRestart();
+  });
+
+  // Forward update events to renderer
+  autoUpdate.setupEventHandlers({
+    onChecking: () => {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('update:checking');
+      }
+    },
+    onUpdateAvailable: (info) => {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('update:available', info);
+      }
+    },
+    onUpdateNotAvailable: (info) => {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('update:not-available', info);
+      }
+    },
+    onDownloadProgress: (progress) => {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('update:progress', progress);
+      }
+    },
+    onUpdateDownloaded: (info) => {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('update:downloaded', info);
+      }
+    },
+    onError: (err) => {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('update:error', err);
+      }
+    },
+  });
 }
 
 // ── Monitor events → renderer ────────────────────────────────────────────────
@@ -278,6 +332,11 @@ app.whenReady().then(() => {
   if (hasSettings) {
     monitor.start();
   }
+
+  // Check for updates in background (silent check on startup)
+  autoUpdate.checkForUpdates(false).catch(err => {
+    console.log('Background update check failed:', err.message);
+  });
 
   console.log('Initialization complete.');
 }).catch(err => {
