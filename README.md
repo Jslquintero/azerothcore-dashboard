@@ -2,21 +2,25 @@
 
 > **Disclaimer:** This project has been *vibe coded* based on my personal needs. I'm making it publicly available in case someone else finds it useful or wants to use it. This dashboard is intended for personal servers or playing with friends, not as a professional private server administration tool.
 
-A system tray dashboard for managing your AzerothCore server. Built with Electron, it provides a convenient GUI to monitor and control your AzerothCore Docker services without touching the terminal.
+A system tray dashboard for managing your AzerothCore server. Built with Electron, it provides a retro World of Warcraft styled GUI to monitor services, run console commands, manage accounts, edit database records, and keep common server tasks out of the terminal.
 
 ![Main Dashboard](assets/screenshot-07.png)
 
 ## Features
 
 - **Service Management** - Start, stop, and restart Database, Worldserver, and Authserver services
-- **Real-time Console** - Execute GM commands directly from the dashboard
+- **Real-time Console** - Execute GM commands directly from the dashboard, with quick commands and clear output
+- **Account Management** - Create accounts, change passwords, and assign GM privileges from the UI
 - **Live Logs** - View logs from any service (Database, Worldserver, Authserver)
 - **Configuration Editor** - Edit `docker-compose.override.yml` environment variables through the UI
 - **Realm Settings** - Modify realm name and address in the database
+- **Database Item Browser** - Search and edit `item_template` records, including direct Wowhead item links
 - **Module Browser** - View installed modules and their documentation
+- **Expansion Themes** - Switch between Vanilla, Burning Crusade, and Wrath of the Lich King artwork
+- **Optional Theme Music** - Play local expansion music with a built-in volume control
 - **System Tray Integration** - Keep the dashboard running in the background
 - **Auto-Update** - Built-in update notifications and one-click installation
-- **Player & Uptime Monitoring** - See connected players and server uptime at a glance
+- **Player & Uptime Monitoring** - See connected players and compact `HH:MM:SS` server uptime at a glance
 
 ## Screenshots
 
@@ -24,7 +28,10 @@ A system tray dashboard for managing your AzerothCore server. Built with Electro
 *Manage all your AzerothCore services from one place*
 
 ![Console](assets/screenshot-06.png)
-*Execute GM commands directly*
+*Run server commands with quick actions and clear console output*
+
+![Accounts](assets/screenshot-02.png)
+*Create accounts and update existing account credentials or GM privileges*
 
 ![Logs Viewer](assets/screenshot-05.png)
 *View real-time logs from any service*
@@ -34,6 +41,9 @@ A system tray dashboard for managing your AzerothCore server. Built with Electro
 
 ![Realm Settings](assets/screenshot-03.png)
 *Manage your realm settings*
+
+![Database Items](assets/screenshot-08.png)
+*Search item templates and open matching Wowhead pages*
 
 ![Settings](assets/screenshot-01.png)
 *Configure your connection settings*
@@ -106,3 +116,5 @@ MIT
 ## Credits
 
 This dashboard was created for managing personal AzerothCore servers. AzerothCore is an open-source World of Warcraft emulator.
+
+Some theme artwork and launcher-style button assets are included for a personal retro UI experience. World of Warcraft and related artwork are property of Blizzard Entertainment.
