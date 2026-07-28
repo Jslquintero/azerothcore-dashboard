@@ -69,7 +69,7 @@ class Monitor extends EventEmitter {
       // Also fetch server info if worldserver is running
       const ws = statuses.find(s => s.name === 'ac-worldserver');
       if (ws && ws.state === 'running') {
-        const info = await soap.getServerInfo();
+        const info = await soap.getServerInfo() || await docker.getWorldserverFallbackInfo(ws);
         if (info) this.emit('server-info', info);
       }
     } catch (err) {

@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld('api', {
   saveSettings: (s) => ipcRenderer.invoke('settings:save', s),
   browseFolder: () => ipcRenderer.invoke('dialog:openFolder'),
   getAppVersion: () => ipcRenderer.invoke('app:getVersion'),
+  openExternal: (url) => ipcRenderer.invoke('app:openExternal', url),
 
   // Docker controls
   getStatuses: () => ipcRenderer.invoke('docker:statuses'),
@@ -18,6 +19,9 @@ contextBridge.exposeInMainWorld('api', {
   // SOAP
   soapCommand: (cmd) => ipcRenderer.invoke('soap:command', cmd),
   getServerInfo: () => ipcRenderer.invoke('soap:serverInfo'),
+  createAccount: (accountData) => ipcRenderer.invoke('soap:createAccount', accountData),
+  setAccountPassword: (accountData) => ipcRenderer.invoke('soap:setAccountPassword', accountData),
+  setAccountGmLevel: (accountData) => ipcRenderer.invoke('soap:setAccountGmLevel', accountData),
 
   // Monitor
   setAutoRestart: (enabled) => ipcRenderer.invoke('monitor:setAutoRestart', enabled),
@@ -26,6 +30,13 @@ contextBridge.exposeInMainWorld('api', {
   // Database / Realm
   getRealmlist: () => ipcRenderer.invoke('db:getRealmlist'),
   updateRealm: (id, fields) => ipcRenderer.invoke('db:updateRealm', id, fields),
+
+  // Database / Items
+  getItems: (options) => ipcRenderer.invoke('db:getItems', options),
+  getItemByEntry: (entry) => ipcRenderer.invoke('db:getItemByEntry', entry),
+  createItem: (itemData) => ipcRenderer.invoke('db:createItem', itemData),
+  updateItem: (entry, fields) => ipcRenderer.invoke('db:updateItem', entry, fields),
+  deleteItem: (entry) => ipcRenderer.invoke('db:deleteItem', entry),
 
   // Docker Compose override editor
   parseCompose: () => ipcRenderer.invoke('compose:parse'),

@@ -47,6 +47,52 @@ async function getServiceStatuses() {
   });
 }
 
+function statusToUptime(status = '') {
+  const match = String(status).match(/\bUp\s+(.+?)(?:\s+\(|$)/i);
+  return match ? match[1].trim() : 'running';
+}
+
+function getLogs(serviceName, tail = 200) {
+  return dockerCompose(['logs', '--tail', String(tail), serviceName]);
+}
+
+function parseWorldserverLogMetrics(logText = '') {
+  const plain = String(logText).replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+  const playerMatches = [...plain.matchAll(/with\s+(\d+)\s+players?\s+online/i)];
+  const botMatches = [...plain.matchAll(/Random\s+Bots\s+Stats:\s*(\d+)\s+online/i)];
+
+  const latestPlayers = playerMatches.length
+    ? parseInt(playerMatches[playerMatches.length - 1][1], 10)
+    : null;
+  const latestBots = botMatches.length
+    ? parseInt(botMatches[botMatches.length - 1][1], 10)
+    : null;
+
+  return {
+    players: latestPlayers,
+    bots: latestBots,
+  };
+}
+
+async function getWorldserverFallbackInfo(status) {
+  const ws = status || (await getServiceStatuses()).find(s => s.name === 'ac-worldserver');
+  if (!ws || ws.state !== 'running') return null;
+
+  let logMetrics = { players: null, bots: null };
+  try {
+    logMetrics = parseWorldserverLogMetrics(await getLogs('ac-worldserver', 250));
+  } catch {}
+
+  return {
+    raw: ws.status || '',
+    uptime: statusToUptime(ws.status),
+    players: logMetrics.players ?? 0,
+    characters: 0,
+    bots: logMetrics.bots,
+    source: 'docker',
+  };
+}
+
 async function startService(name) {
   return dockerCompose(['up', '-d', name]);
 }
@@ -96,4 +142,7 @@ module.exports = {
   startAll,
   stopAll,
   streamLogs,
+  getWorldserverFallbackInfo,
+  parseWorldserverLogMetrics,
+  statusToUptime,
 };

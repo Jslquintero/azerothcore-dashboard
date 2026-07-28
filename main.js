@@ -7,6 +7,7 @@ const {
   Notification,
   nativeImage,
   dialog,
+  shell,
 } = require('electron');
 const { version } = require('./package.json');
 const path = require('path');
@@ -151,6 +152,14 @@ function notifyAutoRestart(svc) {
   }).show();
 }
 
+async function getServerInfo() {
+  const statuses = await docker.getServiceStatuses();
+  const ws = statuses.find(s => s.name === 'ac-worldserver');
+  if (!ws || ws.state !== 'running') return null;
+
+  return await soap.getServerInfo() || await docker.getWorldserverFallbackInfo(ws);
+}
+
 // ── IPC handlers ─────────────────────────────────────────────────────────────
 function registerIPC() {
   // Settings / Setup
@@ -181,6 +190,7 @@ function registerIPC() {
 
   // App version
   ipcMain.handle('app:getVersion', () => version);
+  ipcMain.handle('app:openExternal', (_, url) => shell.openExternal(url));
 
   // Docker controls
   ipcMain.handle('docker:statuses', () => docker.getServiceStatuses());
@@ -191,7 +201,10 @@ function registerIPC() {
   ipcMain.handle('docker:stopAll', () => docker.stopAll());
 
   ipcMain.handle('soap:command', (_, cmd) => soap.executeCommand(cmd));
-  ipcMain.handle('soap:serverInfo', () => soap.getServerInfo());
+  ipcMain.handle('soap:serverInfo', () => getServerInfo());
+  ipcMain.handle('soap:createAccount', (_, accountData) => soap.createAccount(accountData));
+  ipcMain.handle('soap:setAccountPassword', (_, accountData) => soap.setAccountPassword(accountData));
+  ipcMain.handle('soap:setAccountGmLevel', (_, accountData) => soap.setAccountGmLevel(accountData));
 
   ipcMain.handle('monitor:setAutoRestart', (_, enabled) => {
     monitor.setAutoRestart(enabled);
@@ -223,6 +236,13 @@ function registerIPC() {
   // Database / Realm settings
   ipcMain.handle('db:getRealmlist', () => database.getRealmlist());
   ipcMain.handle('db:updateRealm', (_, id, fields) => database.updateRealm(id, fields));
+
+  // Database / Items
+  ipcMain.handle('db:getItems', (_, options) => database.getItems(options));
+  ipcMain.handle('db:getItemByEntry', (_, entry) => database.getItemByEntry(entry));
+  ipcMain.handle('db:createItem', (_, itemData) => database.createItem(itemData));
+  ipcMain.handle('db:updateItem', (_, entry, fields) => database.updateItem(entry, fields));
+  ipcMain.handle('db:deleteItem', (_, entry) => database.deleteItem(entry));
 
   // Docker Compose override editor
   ipcMain.handle('compose:parse', () => compose.parseOverride());

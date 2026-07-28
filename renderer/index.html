@@ -15,6 +15,19 @@
       <h1>AzerothCore</h1>
       <span class="subtitle">Server Dashboard</span>
       <span class="version-badge" id="appVersion" title="Current version">v--</span>
+      <label class="theme-picker" title="Expansion theme">
+        <span>Theme</span>
+        <select id="themeSelect">
+          <option value="classic">Vanilla</option>
+          <option value="tbc">Burning Crusade</option>
+          <option value="wrath">Wrath</option>
+        </select>
+      </label>
+      <label class="music-toggle" title="Theme music">
+        <input type="checkbox" id="musicToggle">
+        <span>Music</span>
+      </label>
+      <input type="range" id="musicVolume" class="music-volume" min="0" max="100" value="35" title="Music volume">
     </div>
     <div class="header-right">
       <div class="info-badge" id="playerCount" title="Connected players">
@@ -48,9 +61,11 @@
   <nav class="tab-bar">
     <button class="tab active" data-tab="services">Services</button>
     <button class="tab" data-tab="console">Console</button>
+    <button class="tab" data-tab="accounts">Accounts</button>
     <button class="tab" data-tab="logs">Logs</button>
     <button class="tab" data-tab="config">Config</button>
     <button class="tab" data-tab="realm">Realm Settings</button>
+    <button class="tab" data-tab="database-items">Database Items</button>
     <button class="tab" data-tab="modules">Modules</button>
     <button class="tab" data-tab="settings">Settings</button>
   </nav>
@@ -73,10 +88,92 @@
   <div class="tab-content" id="tab-console">
     <section class="panel">
       <h2>Server Console</h2>
+      <div class="quick-command-bar">
+        <button type="button" class="btn btn-secondary btn-sm" data-command="server info">Server Info</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-command="account onlinelist">Online Accounts</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-command="server motd">MOTD</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="btnClearConsole">Clear</button>
+      </div>
       <div class="console-output" id="consoleOutput"></div>
       <form class="console-input" id="consoleForm">
-        <input type="text" id="consoleCmd" placeholder="Type a GM command (e.g. .server info)" autocomplete="off">
+        <input type="text" id="consoleCmd" placeholder="Type a console command (e.g. server info)" autocomplete="off">
         <button type="submit" class="btn btn-primary">Send</button>
+      </form>
+    </section>
+  </div>
+
+  <!-- ═══ Tab: Accounts ═══ -->
+  <div class="tab-content" id="tab-accounts">
+    <section class="panel account-panel">
+      <h2>Create Account</h2>
+      <p class="panel-hint">Creates the account through worldserver SOAP and optionally assigns GM privileges.</p>
+      <form id="accountForm" class="account-form">
+        <div class="form-row">
+          <div class="form-field">
+            <label>Username</label>
+            <input type="text" id="accountUsername" autocomplete="off" maxlength="32" required>
+          </div>
+          <div class="form-field">
+            <label>Password</label>
+            <input type="password" id="accountPassword" autocomplete="new-password" maxlength="32" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Privileges</label>
+            <select id="accountGmLevel">
+              <option value="0">Player</option>
+              <option value="1">Moderator (GM 1)</option>
+              <option value="2">Game Master (GM 2)</option>
+              <option value="3">Administrator (GM 3)</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Realm ID</label>
+            <input type="number" id="accountRealmId" value="-1">
+          </div>
+        </div>
+        <div class="config-footer">
+          <button type="submit" class="btn btn-primary" id="btnCreateAccount">Create Account</button>
+          <span id="accountStatus" class="realm-status"></span>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel account-panel">
+      <h2>Edit Existing Account</h2>
+      <p class="panel-hint">Update an account password or GM privileges by username.</p>
+      <form id="accountEditForm" class="account-form">
+        <div class="form-row">
+          <div class="form-field">
+            <label>Username</label>
+            <input type="text" id="editAccountUsername" autocomplete="off" maxlength="32" required>
+          </div>
+          <div class="form-field">
+            <label>New Password</label>
+            <input type="password" id="editAccountPassword" autocomplete="new-password" maxlength="32">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Privileges</label>
+            <select id="editAccountGmLevel">
+              <option value="0">Player</option>
+              <option value="1">Moderator (GM 1)</option>
+              <option value="2">Game Master (GM 2)</option>
+              <option value="3">Administrator (GM 3)</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Realm ID</label>
+            <input type="number" id="editAccountRealmId" value="-1">
+          </div>
+        </div>
+        <div class="config-footer">
+          <button type="button" class="btn btn-secondary" id="btnUpdateAccountPassword">Update Password</button>
+          <button type="button" class="btn btn-primary" id="btnUpdateAccountGm">Update Privileges</button>
+          <span id="accountEditStatus" class="realm-status"></span>
+        </div>
       </form>
     </section>
   </div>
@@ -120,6 +217,42 @@
       <p class="panel-hint">Edit realm name and address in the <code>realmlist</code> table. Changes take effect on next server restart.</p>
       <div id="realmList"></div>
       <div id="realmStatus" class="realm-status"></div>
+    </section>
+  </div>
+
+  <!-- ═══ Tab: Database Items ═══ -->
+  <div class="tab-content" id="tab-database-items">
+    <section class="panel">
+      <h2>Database Items</h2>
+      <p class="panel-hint">Manage items from the <code>item_template</code> table. Changes take effect after realm restart.</p>
+
+      <!-- Search and Action Toolbar -->
+      <div class="items-toolbar">
+        <div class="items-search">
+          <input type="text" id="itemsSearchInput" placeholder="Search by name or entry ID...">
+          <button class="btn btn-primary btn-sm" id="btnItemsSearch">Search</button>
+          <button class="btn btn-secondary btn-sm" id="btnItemsClear">Clear</button>
+        </div>
+        <button class="btn btn-start btn-sm" id="btnNewItem">New Item</button>
+      </div>
+
+      <!-- Items List -->
+      <div class="items-list-header">
+        <span id="itemsCountInfo">Showing 0-0 of 0 items</span>
+        <select id="itemsSortSelect" class="items-sort-select">
+          <option value="entry-ASC">Entry (Asc)</option>
+          <option value="entry-DESC">Entry (Desc)</option>
+          <option value="name-ASC">Name (A-Z)</option>
+          <option value="name-DESC">Name (Z-A)</option>
+          <option value="Quality-DESC">Quality (High-Low)</option>
+          <option value="ItemLevel-DESC">Item Level (High-Low)</option>
+        </select>
+      </div>
+      <div class="items-list" id="itemsList"></div>
+
+      <!-- Pagination -->
+      <div class="items-pagination" id="itemsPagination"></div>
+      <div id="itemsStatus" class="realm-status"></div>
     </section>
   </div>
 
@@ -205,6 +338,585 @@
         <span id="settingsStatus" class="realm-status"></span>
       </div>
     </section>
+  </div>
+
+  <!-- Item Edit Modal -->
+  <div class="modal-overlay" id="itemModalOverlay" style="display:none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="itemModalTitle">Edit Item</h3>
+        <button class="modal-close" id="btnCloseModal">&times;</button>
+      </div>
+      <div class="modal-body" id="itemModalBody">
+        <form id="itemEditForm">
+          <!-- Basic Info -->
+          <div class="form-section">
+            <h4>Basic Info</h4>
+            <div class="form-row" style="align-items: flex-start;">
+              <div class="form-field" style="flex: 0 0 auto;">
+                <label>Icon Preview</label>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <img id="itemIconPreview" src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg"
+                       style="width: 48px; height: 48px; border: 2px solid var(--gold-dim); border-radius: 4px; background: #000;"
+                       alt="Icon Preview">
+                </div>
+              </div>
+              <div class="form-field" style="flex: 1;">
+                <label>Icon Name</label>
+                <input type="text" id="itemIcon" placeholder="e.g., inv_helmet_plate_dungeonplate_c_04">
+                <small style="color: var(--text-muted); display: block; margin-top: 4px;">
+                  Icon filename without extension. Find icons at <a href="https://www.wowhead.com/icons" target="_blank" style="color: var(--gold);">wowhead.com/icons</a>
+                </small>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Entry ID *</label>
+                <input type="number" id="itemEntry" required>
+              </div>
+              <div class="form-field">
+                <label>Name *</label>
+                <input type="text" id="itemName" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Display ID</label>
+                <input type="number" id="itemDisplayId">
+              </div>
+              <div class="form-field">
+                <label>Quality</label>
+                <select id="itemQuality">
+                  <option value="0">0 - Poor (Gray)</option>
+                  <option value="1">1 - Common (White)</option>
+                  <option value="2">2 - Uncommon (Green)</option>
+                  <option value="3">3 - Rare (Blue)</option>
+                  <option value="4">4 - Epic (Purple)</option>
+                  <option value="5">5 - Legendary (Orange)</option>
+                  <option value="6">6 - Artifact (Light Gold)</option>
+                  <option value="7">7 - Heirloom (Account Bound)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Display & Quality -->
+          <div class="form-section">
+            <h4>Display & Flags</h4>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Inventory Type</label>
+                <select id="itemInventoryType">
+                  <option value="0">Non-Equipment</option>
+                  <option value="1">Head</option>
+                  <option value="2">Neck</option>
+                  <option value="3">Shoulder</option>
+                  <option value="5">Chest</option>
+                  <option value="6">Waist</option>
+                  <option value="7">Legs</option>
+                  <option value="8">Feet</option>
+                  <option value="9">Wrist</option>
+                  <option value="10">Hands</option>
+                  <option value="11">Finger</option>
+                  <option value="12">Trinket</option>
+                  <option value="13">One-Hand</option>
+                  <option value="14">Shield</option>
+                  <option value="15">Ranged</option>
+                  <option value="16">Back</option>
+                  <option value="17">Two-Hand</option>
+                  <option value="21">Main Hand</option>
+                  <option value="22">Off Hand</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Flags</label>
+                <input type="number" id="itemFlags" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Max Count</label>
+                <input type="number" id="itemMaxCount" value="1">
+              </div>
+              <div class="form-field">
+                <label>Stackable</label>
+                <input type="number" id="itemStackable" value="1">
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats & Levels -->
+          <div class="form-section">
+            <h4>Stats & Levels</h4>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Item Level</label>
+                <input type="number" id="itemItemLevel">
+              </div>
+              <div class="form-field">
+                <label>Required Level</label>
+                <input type="number" id="itemRequiredLevel">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Stats Count</label>
+                <input type="number" id="itemStatsCount" min="0" max="10" value="0">
+              </div>
+              <div class="form-field">
+                <label>Bonding</label>
+                <select id="itemBonding">
+                  <option value="0">No Bind</option>
+                  <option value="1">On Pickup</option>
+                  <option value="2">On Use</option>
+                  <option value="3">On Quest</option>
+                  <option value="4">Account Bound</option>
+                </select>
+              </div>
+            </div>
+            <!-- Stats Grid -->
+            <div class="form-row">
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Type 1</label>
+                <input type="number" id="itemStatType1" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Value 1</label>
+                <input type="number" id="itemStatValue1" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Type 2</label>
+                <input type="number" id="itemStatType2" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Value 2</label>
+                <input type="number" id="itemStatValue2" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Type 3</label>
+                <input type="number" id="itemStatType3" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Value 3</label>
+                <input type="number" id="itemStatValue3" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Type 4</label>
+                <input type="number" id="itemStatType4" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Value 4</label>
+                <input type="number" id="itemStatValue4" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Type 5</label>
+                <input type="number" id="itemStatType5" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Value 5</label>
+                <input type="number" id="itemStatValue5" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Type 6</label>
+                <input type="number" id="itemStatType6" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Value 6</label>
+                <input type="number" id="itemStatValue6" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Type 7</label>
+                <input type="number" id="itemStatType7" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Value 7</label>
+                <input type="number" id="itemStatValue7" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Type 8</label>
+                <input type="number" id="itemStatType8" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Value 8</label>
+                <input type="number" id="itemStatValue8" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Type 9</label>
+                <input type="number" id="itemStatType9" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Value 9</label>
+                <input type="number" id="itemStatValue9" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Type 10</label>
+                <input type="number" id="itemStatType10" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 48%">
+                <label>Stat Value 10</label>
+                <input type="number" id="itemStatValue10" value="0">
+              </div>
+            </div>
+          </div>
+
+          <!-- Resistances -->
+          <div class="form-section">
+            <h4>Resistances</h4>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Holy Res</label>
+                <input type="number" id="itemHolyRes" value="0">
+              </div>
+              <div class="form-field">
+                <label>Fire Res</label>
+                <input type="number" id="itemFireRes" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Nature Res</label>
+                <input type="number" id="itemNatureRes" value="0">
+              </div>
+              <div class="form-field">
+                <label>Frost Res</label>
+                <input type="number" id="itemFrostRes" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Shadow Res</label>
+                <input type="number" id="itemShadowRes" value="0">
+              </div>
+              <div class="form-field">
+                <label>Arcane Res</label>
+                <input type="number" id="itemArcaneRes" value="0">
+              </div>
+            </div>
+          </div>
+
+          <!-- Armor & Damage -->
+          <div class="form-section">
+            <h4>Armor & Damage</h4>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Armor</label>
+                <input type="number" id="itemArmor" value="0">
+              </div>
+              <div class="form-field">
+                <label>Max Durability</label>
+                <input type="number" id="itemMaxDurability" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Dmg Min 1</label>
+                <input type="number" id="itemDmgMin1" value="0">
+              </div>
+              <div class="form-field">
+                <label>Dmg Max 1</label>
+                <input type="number" id="itemDmgMax1" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Dmg Type 1</label>
+                <input type="number" id="itemDmgType1" value="0">
+              </div>
+              <div class="form-field">
+                <label>Delay (ms)</label>
+                <input type="number" id="itemDelay" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Dmg Min 2</label>
+                <input type="number" id="itemDmgMin2" value="0">
+              </div>
+              <div class="form-field">
+                <label>Dmg Max 2</label>
+                <input type="number" id="itemDmgMax2" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Dmg Type 2</label>
+                <input type="number" id="itemDmgType2" value="0">
+              </div>
+              <div class="form-field">
+                <label>Ammo Type</label>
+                <input type="number" id="itemAmmoType" value="0">
+              </div>
+            </div>
+          </div>
+
+          <!-- Item Class -->
+          <div class="form-section">
+            <h4>Item Class & Material</h4>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Class</label>
+                <select id="itemClass">
+                  <option value="0">Consumable</option>
+                  <option value="1">Container</option>
+                  <option value="2">Weapon</option>
+                  <option value="3">Gem</option>
+                  <option value="4">Armor</option>
+                  <option value="5">Reagent</option>
+                  <option value="6">Projectile</option>
+                  <option value="7">Trade Goods</option>
+                  <option value="8">Generic</option>
+                  <option value="9">Recipe</option>
+                  <option value="10">Money</option>
+                  <option value="11">Quiver</option>
+                  <option value="12">Quest</option>
+                  <option value="13">Key</option>
+                  <option value="14">Permanent</option>
+                  <option value="15">Miscellaneous</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Subclass</label>
+                <input type="number" id="itemSubclass" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Material</label>
+                <input type="number" id="itemMaterial" value="0">
+              </div>
+              <div class="form-field">
+                <label>Sheath</label>
+                <select id="itemSheath">
+                  <option value="0">None</option>
+                  <option value="1">1H</option>
+                  <option value="2">2H (Staff)</option>
+                  <option value="3">2H (Classic/Close)</option>
+                  <option value="4">2H (Classic/High)</option>
+                  <option value="5">2H (Hybrid/Close)</option>
+                  <option value="6">2H (Hybrid/High)</option>
+                  <option value="7">Offhand</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Economics -->
+          <div class="form-section">
+            <h4>Economics</h4>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Buy Price (copper)</label>
+                <input type="number" id="itemBuyPrice">
+              </div>
+              <div class="form-field">
+                <label>Sell Price (copper)</label>
+                <input type="number" id="itemSellPrice">
+              </div>
+            </div>
+          </div>
+
+          <!-- Spells -->
+          <div class="form-section">
+            <h4>Spells</h4>
+            <div class="form-row">
+              <div class="form-field" style="flex:0 0 32%">
+                <label>Spell ID 1</label>
+                <input type="number" id="itemSpellId1" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 32%">
+                <label>Trigger 1</label>
+                <input type="number" id="itemSpellTrigger1" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 32%">
+                <label>Charges 1</label>
+                <input type="number" id="itemSpellCharges1" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field" style="flex:0 0 32%">
+                <label>Spell ID 2</label>
+                <input type="number" id="itemSpellId2" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 32%">
+                <label>Trigger 2</label>
+                <input type="number" id="itemSpellTrigger2" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 32%">
+                <label>Charges 2</label>
+                <input type="number" id="itemSpellCharges2" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field" style="flex:0 0 32%">
+                <label>Spell ID 3</label>
+                <input type="number" id="itemSpellId3" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 32%">
+                <label>Trigger 3</label>
+                <input type="number" id="itemSpellTrigger3" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 32%">
+                <label>Charges 3</label>
+                <input type="number" id="itemSpellCharges3" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field" style="flex:0 0 32%">
+                <label>Spell ID 4</label>
+                <input type="number" id="itemSpellId4" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 32%">
+                <label>Trigger 4</label>
+                <input type="number" id="itemSpellTrigger4" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 32%">
+                <label>Charges 4</label>
+                <input type="number" id="itemSpellCharges4" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field" style="flex:0 0 32%">
+                <label>Spell ID 5</label>
+                <input type="number" id="itemSpellId5" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 32%">
+                <label>Trigger 5</label>
+                <input type="number" id="itemSpellTrigger5" value="0">
+              </div>
+              <div class="form-field" style="flex:0 0 32%">
+                <label>Charges 5</label>
+                <input type="number" id="itemSpellCharges5" value="0">
+              </div>
+            </div>
+          </div>
+
+          <!-- Container & Quest -->
+          <div class="form-section">
+            <h4>Container & Quest</h4>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Container ID</label>
+                <input type="number" id="itemContainerId" value="0">
+              </div>
+              <div class="form-field">
+                <label>Start Quest</label>
+                <input type="number" id="itemStartQuest" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Lock ID</label>
+                <input type="number" id="itemLockId" value="0">
+              </div>
+              <div class="form-field">
+                <label>Item Set</label>
+                <input type="number" id="itemItemSet" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Random Property</label>
+                <input type="number" id="itemRandomProperty" value="0">
+              </div>
+              <div class="form-field">
+                <label>Random Suffix</label>
+                <input type="number" id="itemRandomSuffix" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Bag Family</label>
+                <input type="number" id="itemBagFamily" value="0">
+              </div>
+              <div class="form-field">
+                <label>Item Limit Category</label>
+                <input type="number" id="itemItemLimitCategory" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Holiday ID</label>
+                <input type="number" id="itemHolidayId" value="0">
+              </div>
+              <div class="form-field">
+                <label>Disenchant ID</label>
+                <input type="number" id="itemDisenchantId" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Food Type</label>
+                <input type="number" id="itemFoodType" value="0">
+              </div>
+              <div class="form-field">
+                <label>Min Money Loot</label>
+                <input type="number" id="itemMinMoneyLoot" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Max Money Loot</label>
+                <input type="number" id="itemMaxMoneyLoot" value="0">
+              </div>
+              <div class="form-field">
+                <label>Duration (seconds)</label>
+                <input type="number" id="itemDuration" value="0">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Ranged Mod Range</label>
+                <input type="number" id="itemRangedModRange" value="0">
+              </div>
+              <div class="form-field">
+                <label>Zone</label>
+                <input type="number" id="itemZone" value="0">
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="form-section">
+            <h4>Description</h4>
+            <div class="form-field">
+              <label>Item Description</label>
+              <textarea id="itemDescription" rows="2"></textarea>
+            </div>
+          </div>
+
+          <!-- Scripting -->
+          <div class="form-section">
+            <h4>Scripting</h4>
+            <div class="form-field">
+              <label>Script Name</label>
+              <input type="text" id="itemScriptName" placeholder="">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="btnModalCancel">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="btnModalSave">Save</button>
+      </div>
+    </div>
   </div>
 
   <script src="renderer.js"></script>

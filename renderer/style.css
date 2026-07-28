@@ -2,26 +2,80 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg-dark:    #0d0d1a;
-  --bg-panel:   #1a1a2e;
-  --bg-card:    #16213e;
-  --bg-input:   #0f3460;
-  --gold:       #c9a84c;
-  --gold-dim:   #8a6d2b;
-  --green:      #4ecca3;
-  --red:        #e74c3c;
-  --yellow:     #f1c40f;
-  --text:       #e0e0e0;
-  --text-muted: #7f8c8d;
+  --bg-dark:    #0f1217;
+  --bg-panel:   #171c24;
+  --bg-card:    #1d2530;
+  --bg-input:   #111822;
+  --border:     #2b3542;
+  --border-soft:#222b36;
+  --gold:       #d5b15f;
+  --gold-dim:   #6f5b30;
+  --blue:       #6aa6d9;
+  --green:      #48c78e;
+  --red:        #e05f5f;
+  --yellow:     #d9b95c;
+  --text:       #e7edf4;
+  --text-muted: #95a1af;
+  --shadow:     0 14px 34px rgba(0, 0, 0, 0.22);
   --radius:     8px;
 }
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: var(--bg-dark);
+  background:
+    linear-gradient(90deg, rgba(15, 18, 23, 0.82), rgba(15, 18, 23, 0.58) 45%, rgba(15, 18, 23, 0.88)),
+    var(--theme-art, none),
+    radial-gradient(circle at 18% 0%, color-mix(in srgb, var(--theme-glow, #2e5f85) 22%, transparent), transparent 34rem),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-dark) 78%, #000), var(--bg-dark) 18rem);
+  background-attachment: fixed;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
   color: var(--text);
   min-height: 100vh;
-  padding: 0 20px 20px;
+  padding: 0 24px 28px;
+}
+
+body[data-theme="classic"] {
+  --theme-art: url('../assets/themes/classic.jpg');
+  --theme-glow: #8b6b35;
+  --bg-dark: #13100c;
+  --bg-panel: #211b14;
+  --bg-card: #2b241a;
+  --bg-input: #17120d;
+  --border: #554633;
+  --border-soft: #3c3022;
+  --gold: #e0b85f;
+  --gold-dim: #7a6133;
+  --blue: #c89b4f;
+}
+
+body[data-theme="tbc"] {
+  --theme-art: url('../assets/themes/tbc.jpg');
+  --theme-glow: #29754e;
+  --bg-dark: #0d1411;
+  --bg-panel: #14221b;
+  --bg-card: #1b2d24;
+  --bg-input: #0c1813;
+  --border: #2f5542;
+  --border-soft: #244133;
+  --gold: #d7b75d;
+  --gold-dim: #6c6533;
+  --blue: #61d889;
+}
+
+body[data-theme="wrath"] {
+  --theme-art: url('../assets/themes/wrath.jpg');
+  --theme-glow: #2e5f85;
+  --bg-dark: #0d1319;
+  --bg-panel: #141d26;
+  --bg-card: #1a2734;
+  --bg-input: #0c1621;
+  --border: #2e4355;
+  --border-soft: #243644;
+  --gold: #d7b866;
+  --gold-dim: #665735;
+  --blue: #75b9e8;
 }
 
 /* ── Header ───────────────────────────────────────────────────────────────── */
@@ -85,6 +139,8 @@ body {
   font-size: 1rem;
   font-weight: 700;
   color: var(--gold);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* ── Update Banner ───────────────────────────────────────────────────────────── */
@@ -317,15 +373,15 @@ body {
 }
 .status-dot.running {
   background: var(--green);
-  box-shadow: 0 0 8px var(--green), 0 0 16px rgba(78, 204, 163, 0.3);
+  box-shadow: none;
 }
 .status-dot.exited {
   background: var(--red);
-  box-shadow: 0 0 8px var(--red), 0 0 16px rgba(231, 76, 60, 0.3);
+  box-shadow: none;
 }
 .status-dot.starting {
   background: var(--yellow);
-  box-shadow: 0 0 8px var(--yellow);
+  box-shadow: none;
   animation: pulse 1s ease-in-out infinite;
 }
 .status-dot.not-found {
@@ -417,6 +473,13 @@ body {
   white-space: pre-wrap;
   word-break: break-all;
   margin-bottom: 8px;
+}
+
+.quick-command-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
 .console-input {
@@ -523,6 +586,32 @@ body {
 }
 .realm-status.success { color: var(--green); }
 .realm-status.error   { color: var(--red); }
+
+/* ── Accounts ────────────────────────────────────────────────────────────── */
+.account-panel {
+  max-width: 720px;
+}
+
+.account-form .form-row {
+  margin-bottom: 14px;
+}
+
+.account-form input,
+.account-form select {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  color: var(--text);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.account-form input:focus,
+.account-form select:focus {
+  border-color: var(--gold);
+}
 
 /* ── Config Editor ────────────────────────────────────────────────────────── */
 .config-section {
@@ -818,3 +907,751 @@ body {
 ::-webkit-scrollbar-track { background: var(--bg-dark); }
 ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* ── Database Items Tab ───────────────────────────────────────────────────── */
+.items-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.items-search {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  min-width: 250px;
+}
+
+.items-search input {
+  flex: 1;
+  background: var(--bg-input);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  color: var(--text);
+  font-size: 0.85rem;
+  outline: none;
+}
+.items-search input:focus {
+  border-color: var(--gold);
+}
+
+.items-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.items-sort-select {
+  background: var(--bg-input);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  color: var(--text);
+  font-size: 0.82rem;
+  outline: none;
+}
+
+/* WoW Item Quality Colors */
+.quality-0 { color: #9d9d9d; } /* Poor - Gray */
+.quality-1 { color: #ffffff; } /* Common - White */
+.quality-2 { color: #1eff00; } /* Uncommon - Green */
+.quality-3 { color: #0070dd; } /* Rare - Blue */
+.quality-4 { color: #a335ee; } /* Epic - Purple */
+.quality-5 { color: #ff8000; } /* Legendary - Orange */
+.quality-6 { color: #e5cc80; } /* Artifact - Light Gold */
+.quality-7 { color: #00ccff; } /* Heirloom - Light Blue */
+
+.items-list {
+  max-height: 500px;
+  overflow-y: auto;
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+}
+
+.item-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.15s;
+}
+.item-card:hover {
+  background: #1a2744;
+}
+
+.item-card-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+.item-icon {
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--gold-dim);
+  border-radius: 4px;
+  background: #000;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+}
+
+.item-entry-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 20px;
+}
+
+.item-entry {
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.85rem;
+  color: var(--gold);
+}
+
+.item-link-btn {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--gold-dim);
+  border-radius: 4px;
+  color: var(--gold);
+  cursor: pointer;
+  font-size: 0.78rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.item-link-btn:hover {
+  border-color: var(--gold);
+  background: var(--bg-input);
+}
+
+.item-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.item-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.item-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.item-card-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* Pagination */
+.items-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--gold-dim);
+}
+
+.pagination-info {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--bg-panel);
+  border: 2px solid var(--gold);
+  border-radius: var(--radius);
+  max-width: 650px;
+  width: 90%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--gold-dim);
+}
+
+.modal-header h3 {
+  color: var(--gold);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-close:hover {
+  color: var(--red);
+}
+
+.modal-body {
+  padding: 16px 18px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--gold-dim);
+}
+
+/* Form Sections */
+.form-section {
+  margin-bottom: 18px;
+}
+
+.form-section h4 {
+  color: var(--gold);
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--gold-dim);
+  padding-bottom: 4px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.form-field {
+  flex: 1;
+}
+
+.form-field label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  color: var(--text);
+  font-size: 0.85rem;
+  outline: none;
+}
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: var(--gold);
+}
+
+.form-field textarea {
+  resize: vertical;
+  min-height: 50px;
+}
+
+/* ── Professional Layout Pass ─────────────────────────────────────────────── */
+.header {
+  max-width: 1240px;
+  margin: 0 auto 18px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.65;
+}
+
+.header h1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.65rem;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
+.header-left {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.subtitle,
+.version-badge {
+  margin-left: 0;
+}
+
+.version-badge {
+  border-color: var(--border);
+  border-radius: 999px;
+  background: var(--bg-input);
+}
+
+.theme-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.theme-picker select {
+  min-height: 28px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 4px 8px;
+  font-size: 0.78rem;
+  outline: none;
+}
+
+.theme-picker select:focus {
+  border-color: var(--blue);
+}
+
+.music-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.music-toggle input {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--gold);
+}
+
+.music-volume {
+  width: 86px;
+  height: 18px;
+  accent-color: var(--gold);
+}
+
+.header-right {
+  gap: 10px;
+}
+
+.info-badge {
+  min-width: 104px;
+  padding: 9px 14px;
+  background: var(--bg-panel);
+  border-color: var(--border);
+}
+
+.tab-bar,
+.tab-content,
+.update-banner {
+  max-width: 1240px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tab-bar {
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  margin-bottom: 18px;
+  background:
+    linear-gradient(rgba(15, 18, 23, 0.35), rgba(15, 18, 23, 0.35)),
+    url('../assets/retro/retro-background.png'),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-card) 84%, var(--gold) 16%), var(--bg-panel));
+  background-size: auto, auto, auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), var(--shadow);
+}
+
+.tab {
+  border-radius: 6px;
+  border-bottom: none;
+  margin-bottom: 0;
+  padding: 8px 13px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.tab:hover {
+  background: var(--bg-card);
+}
+
+.tab.active {
+  color: var(--gold);
+  background: var(--bg-card);
+  border: 1px solid color-mix(in srgb, var(--gold) 52%, var(--border));
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.24);
+}
+
+.toolbar,
+.quick-command-bar,
+.log-controls,
+.items-toolbar,
+.config-footer,
+.modal-footer {
+  gap: 8px;
+}
+
+.toolbar {
+  max-width: 1240px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 12px;
+  background:
+    linear-gradient(rgba(23, 28, 36, 0.82), rgba(23, 28, 36, 0.82)),
+    url('../assets/retro/retro-background.png');
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.btn {
+  min-width: 127px;
+  min-height: 23px;
+  height: 23px;
+  padding: 0 12px;
+  border-radius: 0;
+  transition: border-color 0.15s, opacity 0.15s;
+  appearance: none;
+  background-color: transparent;
+  background-image: url('../assets/retro/button.png');
+  background-size: 127px 23px;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: none;
+  color: var(--gold);
+  font-size: 0.78rem;
+  line-height: 23px;
+  text-shadow: none;
+  box-shadow: none;
+  filter: none;
+  image-rendering: pixelated;
+}
+
+.btn-secondary {
+  border: none;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-image: url('../assets/retro/buttonHover.png');
+  opacity: 1;
+}
+
+.btn-primary,
+.btn-start,
+.btn-stop {
+  background-color: transparent;
+  background-image: url('../assets/retro/button.png');
+  color: var(--gold);
+}
+
+.btn-primary:hover:not(:disabled),
+.btn-start:hover:not(:disabled),
+.btn-stop:hover:not(:disabled) {
+  background-image: url('../assets/retro/buttonHover.png');
+  opacity: 1;
+}
+
+.btn:active:not(:disabled) {
+  background-image: url('../assets/retro/buttonPress.png');
+}
+
+.btn:hover:not(:disabled) {
+  opacity: 1;
+  box-shadow: none;
+  filter: none;
+}
+
+.btn-start {
+  border: none;
+}
+
+.btn-stop {
+  border: none;
+}
+
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-start,
+.btn-stop {
+  border: none;
+  background-color: transparent;
+  outline: none;
+}
+
+.btn-sm {
+  min-width: 127px;
+  height: 23px;
+  padding: 0 10px;
+  font-size: 0.78rem;
+  line-height: 23px;
+}
+
+.services {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.service-card,
+.panel,
+.realm-card,
+.modules-sidebar,
+.items-list,
+.modal-content {
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+.service-card {
+  border-width: 1px;
+  padding: 16px;
+  background: var(--bg-panel);
+}
+
+.service-card.state-running  { border-left: 4px solid var(--green); }
+.service-card.state-exited   { border-left: 4px solid var(--red); }
+.service-card.state-starting { border-left: 4px solid var(--yellow); }
+
+.service-card .card-actions,
+.item-card-actions {
+  flex-wrap: wrap;
+}
+
+.panel {
+  padding: 18px;
+  margin-bottom: 18px;
+  background:
+    linear-gradient(rgba(23, 28, 36, 0.92), rgba(23, 28, 36, 0.92)),
+    url('../assets/retro/parchment.png');
+  background-size: auto, 100% auto;
+}
+
+.panel h2 {
+  margin-bottom: 6px;
+  padding-bottom: 0;
+  border-bottom: none;
+  font-size: 1.05rem;
+}
+
+.panel-hint {
+  margin-bottom: 16px;
+}
+
+.console-output,
+.log-output {
+  height: min(54vh, 520px);
+  min-height: 340px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  background: #070a0d;
+  color: #9ee6b8;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.console-input input,
+.log-controls select,
+.realm-field input,
+.config-input,
+.items-search input,
+.items-sort-select,
+.account-form input,
+.account-form select,
+.form-field input,
+.form-field select,
+.form-field textarea {
+  border-color: var(--border);
+  background: var(--bg-input);
+}
+
+.console-input input:focus,
+.log-controls select:focus,
+.realm-field input:focus,
+.config-input:focus,
+.items-search input:focus,
+.items-sort-select:focus,
+.account-form input:focus,
+.account-form select:focus,
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: var(--blue);
+}
+
+#tab-accounts.active {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 18px;
+}
+
+.account-panel {
+  max-width: none;
+  margin-bottom: 0;
+}
+
+.form-row,
+.realm-fields {
+  gap: 14px;
+}
+
+.config-row,
+.item-card,
+.realm-card {
+  background: var(--bg-card);
+  border-color: var(--border-soft);
+}
+
+.config-row {
+  padding: 9px 12px;
+}
+
+.config-row:hover,
+.item-card:hover {
+  background: #222b37;
+}
+
+.config-key {
+  min-width: 280px;
+}
+
+.items-list {
+  max-height: min(58vh, 620px);
+  padding: 8px;
+}
+
+.item-card {
+  margin-bottom: 8px;
+}
+
+.item-card:last-child {
+  margin-bottom: 0;
+}
+
+.modules-layout {
+  height: calc(100vh - 166px);
+}
+
+@media (max-width: 840px) {
+  body {
+    padding: 0 14px 18px;
+  }
+
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .header-right,
+  .toolbar,
+  .console-input,
+  .items-list-header,
+  .config-footer {
+    flex-wrap: wrap;
+  }
+
+  .toggle-label {
+    margin-left: 0;
+  }
+
+  .realm-fields,
+  .form-row,
+  #tab-accounts.active {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .config-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .config-key {
+    min-width: 0;
+  }
+
+  .modules-layout {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .modules-sidebar {
+    width: 100%;
+    max-height: 220px;
+  }
+}
