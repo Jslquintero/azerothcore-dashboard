@@ -68,7 +68,25 @@ async function executeCommand(command) {
     const result = body.executeCommandResponse?.result || '';
     return { success: true, message: result };
   } catch (err) {
+    const soapError = await parseSoapErrorResponse(err?.response?.data);
+    if (soapError) return { success: false, message: soapError };
     return { success: false, message: formatConnectionError(err) };
+  }
+}
+
+async function parseSoapErrorResponse(data) {
+  if (!data || typeof data !== 'string') return null;
+
+  try {
+    const parsed = await parseStringPromise(data, {
+      explicitArray: false,
+      tagNameProcessors: [processors.stripPrefix],
+    });
+    const fault = parsed.Envelope?.Body?.Fault;
+    const message = fault?.faultstring || fault?.detail;
+    return typeof message === 'string' ? message.trim() : null;
+  } catch {
+    return null;
   }
 }
 
@@ -120,8 +138,8 @@ async function getServerInfo() {
   return parseServerInfo(result.message);
 }
 
-function quoteArg(value) {
-  return `"${String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+function commandArg(value) {
+  return String(value);
 }
 
 async function createAccount({ username, password, gmLevel = 0, realmId = -1 } = {}) {
@@ -143,7 +161,7 @@ async function createAccount({ username, password, gmLevel = 0, realmId = -1 } =
     return { success: false, message: 'Realm ID must be a number.' };
   }
 
-  const createResult = await executeCommand(`account create ${quoteArg(accountName)} ${quoteArg(accountPassword)}`);
+  const createResult = await executeCommand(`account create ${commandArg(accountName)} ${commandArg(accountPassword)}`);
   if (!createResult.success) return createResult;
 
   if (level === 0) {
@@ -153,7 +171,7 @@ async function createAccount({ username, password, gmLevel = 0, realmId = -1 } =
     };
   }
 
-  const gmResult = await executeCommand(`account set gmlevel ${quoteArg(accountName)} ${level} ${realm}`);
+  const gmResult = await executeCommand(`account set gmlevel ${commandArg(accountName)} ${level} ${realm}`);
   if (!gmResult.success) {
     return {
       success: false,
@@ -178,6 +196,9 @@ function validatePassword(accountPassword) {
   if (accountPassword.length < 4 || accountPassword.length > 32) {
     return 'Password must be 4-32 characters.';
   }
+  if (/\s/.test(accountPassword)) {
+    return 'Password cannot contain spaces or whitespace characters.';
+  }
   return null;
 }
 
@@ -197,7 +218,7 @@ async function setAccountPassword({ username, password } = {}) {
   if (nameError) return { success: false, message: nameError };
   if (passwordError) return { success: false, message: passwordError };
 
-  return executeCommand(`account set password ${quoteArg(accountName)} ${quoteArg(accountPassword)} ${quoteArg(accountPassword)}`);
+  return executeCommand(`account set password ${commandArg(accountName)} ${commandArg(accountPassword)} ${commandArg(accountPassword)}`);
 }
 
 async function setAccountGmLevel({ username, gmLevel = 0, realmId = -1 } = {}) {
@@ -210,7 +231,7 @@ async function setAccountGmLevel({ username, gmLevel = 0, realmId = -1 } = {}) {
   if (gmError) return { success: false, message: gmError };
   if (!Number.isInteger(realm)) return { success: false, message: 'Realm ID must be a number.' };
 
-  return executeCommand(`account set gmlevel ${quoteArg(accountName)} ${level} ${realm}`);
+  return executeCommand(`account set gmlevel ${commandArg(accountName)} ${level} ${realm}`);
 }
 
 module.exports = {

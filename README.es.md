@@ -12,7 +12,7 @@ Un dashboard de bandeja del sistema para administrar tu servidor AzerothCore. Co
 - **Consola en Tiempo Real** - Ejecuta comandos de GM directamente desde el dashboard, con comandos rápidos y limpieza de salida
 - **Gestión de Cuentas** - Crea cuentas, cambia contraseñas y asigna privilegios GM desde la interfaz
 - **Logs en Vivo** - Visualiza los logs de cualquier servicio (Base de Datos, Worldserver, Authserver)
-- **Editor de Configuración** - Edita las variables de entorno de `docker-compose.override.yml` a través de la interfaz
+- **Editor de Configuración** - Edita las variables de entorno de la configuración Compose seleccionada desde la interfaz
 - **Configuración de Realm** - Modifica el nombre y dirección del realm en la base de datos
 - **Base de Items** - Busca y edita registros de `item_template`, incluyendo enlaces directos a Wowhead
 - **Visor de Módulos** - Consulta los módulos instalados y su documentación

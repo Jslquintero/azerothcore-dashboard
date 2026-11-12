@@ -12,7 +12,7 @@ A system tray dashboard for managing your AzerothCore server. Built with Electro
 - **Real-time Console** - Execute GM commands directly from the dashboard, with quick commands and clear output
 - **Account Management** - Create accounts, change passwords, and assign GM privileges from the UI
 - **Live Logs** - View logs from any service (Database, Worldserver, Authserver)
-- **Configuration Editor** - Edit `docker-compose.override.yml` environment variables through the UI
+- **Configuration Editor** - Edit environment variables in the selected Compose configuration through the UI
 - **Realm Settings** - Modify realm name and address in the database
 - **Database Item Browser** - Search and edit `item_template` records, including direct Wowhead item links
 - **Module Browser** - View installed modules and their documentation

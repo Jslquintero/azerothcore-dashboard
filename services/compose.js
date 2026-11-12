@@ -23,13 +23,8 @@ function inferType(value) {
  * Preserves comments, grouping, and inline hints.
  */
 function parseOverride() {
-  const overridePath = getOverridePath();
-  if (!fs.existsSync(overridePath)) {
-    const offlinePath = getOfflineComposePath();
-    if (!fs.existsSync(offlinePath)) {
-      return { sections: [], raw: '' };
-    }
-
+  const offlinePath = getOfflineComposePath();
+  if (fs.existsSync(offlinePath)) {
     const compose = JSON.parse(fs.readFileSync(offlinePath, 'utf-8'));
     const environment = compose.services?.['ac-worldserver']?.environment || {};
     return {
@@ -46,6 +41,9 @@ function parseOverride() {
       raw: JSON.stringify(compose, null, 2),
     };
   }
+
+  const overridePath = getOverridePath();
+  if (!fs.existsSync(overridePath)) return { sections: [], raw: '' };
 
   const raw = fs.readFileSync(overridePath, 'utf-8');
   const lines = raw.split('\n');
@@ -134,13 +132,8 @@ function parseOverride() {
  * @param {Object} updates - { "AC_VAR": "newValue", ... }
  */
 function saveOverride(updates) {
-  const overridePath = getOverridePath();
-  if (!fs.existsSync(overridePath)) {
-    const offlinePath = getOfflineComposePath();
-    if (!fs.existsSync(offlinePath)) {
-      throw new Error('No supported Compose configuration file was found.');
-    }
-
+  const offlinePath = getOfflineComposePath();
+  if (fs.existsSync(offlinePath)) {
     const compose = JSON.parse(fs.readFileSync(offlinePath, 'utf-8'));
     const environment = compose.services?.['ac-worldserver']?.environment;
     if (!environment) throw new Error('Offline repack has no ac-worldserver environment section.');
@@ -151,6 +144,11 @@ function saveOverride(updates) {
     }
     fs.writeFileSync(offlinePath, JSON.stringify(compose, null, 2) + '\n', 'utf-8');
     return;
+  }
+
+  const overridePath = getOverridePath();
+  if (!fs.existsSync(overridePath)) {
+    throw new Error('No supported Compose configuration file was found.');
   }
 
   const raw = fs.readFileSync(overridePath, 'utf-8');
