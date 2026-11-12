@@ -81,7 +81,7 @@ npm start
 
 Al iniciarse por primera vez, se te pedirá que configures:
 
-1. **Raíz del Proyecto AzerothCore** - Ruta a tu instalación de AzerothCore
+1. **Raíz del Proyecto AzerothCore** - Selecciona la carpeta que contiene `docker-compose.yml`; para el repack offline, selecciona la carpeta extraída que contiene `compose.json` (por ejemplo, `installed-repack-1.1.0`).
 2. **Conexión SOAP** - Host, puerto, nombre de usuario y contraseña para SOAP
 3. **Conexión MySQL** - Host, puerto, nombre de usuario y contraseña para la base de datos
 

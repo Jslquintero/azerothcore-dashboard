@@ -425,6 +425,13 @@ body[data-theme="wrath"] {
   min-height: 1em;
 }
 
+.service-card .card-image {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .service-card .card-actions {
   display: flex;
   gap: 6px;

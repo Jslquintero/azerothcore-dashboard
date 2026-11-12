@@ -81,7 +81,7 @@ npm start
 
 On first launch, you'll be prompted to configure:
 
-1. **AzerothCore Project Root** - Path to your AzerothCore installation
+1. **AzerothCore Project Root** - Select the folder containing `docker-compose.yml`. For the offline repack, select its extracted folder containing `compose.json` (for example, `installed-repack-1.1.0`).
 2. **SOAP Connection** - Host, port, username, and password for SOAP
 3. **MySQL Connection** - Host, port, username, and password for the database
 

@@ -6,12 +6,47 @@ function getOverridePath() {
   return path.join(root, 'docker-compose.override.yml');
 }
 
+function getOfflineComposePath() {
+  const root = process.env.AC_PROJECT_ROOT || '';
+  return path.join(root, 'compose.json');
+}
+
+function inferType(value) {
+  const text = String(value);
+  if (text === '0' || text === '1') return 'toggle';
+  if (/^-?\d+$/.test(text)) return 'number';
+  return 'text';
+}
+
 /**
  * Parse the docker-compose.override.yml into structured sections.
  * Preserves comments, grouping, and inline hints.
  */
 function parseOverride() {
   const overridePath = getOverridePath();
+  if (!fs.existsSync(overridePath)) {
+    const offlinePath = getOfflineComposePath();
+    if (!fs.existsSync(offlinePath)) {
+      return { sections: [], raw: '' };
+    }
+
+    const compose = JSON.parse(fs.readFileSync(offlinePath, 'utf-8'));
+    const environment = compose.services?.['ac-worldserver']?.environment || {};
+    return {
+      sections: [{
+        name: 'Worldserver',
+        vars: Object.entries(environment).map(([key, value]) => ({
+          key,
+          value: String(value),
+          hint: '',
+          type: inferType(value),
+          disabled: false,
+        })),
+      }],
+      raw: JSON.stringify(compose, null, 2),
+    };
+  }
+
   const raw = fs.readFileSync(overridePath, 'utf-8');
   const lines = raw.split('\n');
 
@@ -100,6 +135,24 @@ function parseOverride() {
  */
 function saveOverride(updates) {
   const overridePath = getOverridePath();
+  if (!fs.existsSync(overridePath)) {
+    const offlinePath = getOfflineComposePath();
+    if (!fs.existsSync(offlinePath)) {
+      throw new Error('No supported Compose configuration file was found.');
+    }
+
+    const compose = JSON.parse(fs.readFileSync(offlinePath, 'utf-8'));
+    const environment = compose.services?.['ac-worldserver']?.environment;
+    if (!environment) throw new Error('Offline repack has no ac-worldserver environment section.');
+    for (const [key, value] of Object.entries(updates)) {
+      if (Object.prototype.hasOwnProperty.call(environment, key)) {
+        environment[key] = String(value);
+      }
+    }
+    fs.writeFileSync(offlinePath, JSON.stringify(compose, null, 2) + '\n', 'utf-8');
+    return;
+  }
+
   const raw = fs.readFileSync(overridePath, 'utf-8');
   const lines = raw.split('\n');
   const result = [];

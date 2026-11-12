@@ -186,6 +186,7 @@ function renderCards(statuses) {
           </div>
         </div>
         <div class="card-status">${svc.status || ''}</div>
+        ${svc.image ? `<div class="card-image" title="${escapeHtml(svc.image)}">Image: ${escapeHtml(svc.image)}</div>` : ''}
         <div class="card-actions">
           <button class="btn btn-start btn-sm" data-action="start" data-service="${svc.name}" ${startDisabled}>Start</button>
           <button class="btn btn-stop btn-sm" data-action="stop" data-service="${svc.name}" ${stopDisabled}>Stop</button>
@@ -824,7 +825,8 @@ document.getElementById('btnSaveSettings').addEventListener('click', async () =>
   }
 
   try {
-    await window.api.saveSettings(newSettings);
+    const result = await window.api.saveSettings(newSettings);
+    if (result?.error) throw new Error(result.error);
     $settingsStatus.textContent = 'Settings saved successfully.';
     $settingsStatus.className = 'realm-status success';
   } catch (err) {

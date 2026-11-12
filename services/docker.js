@@ -1,9 +1,41 @@
 const { execFile, spawn } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 const SERVICES = ['ac-database', 'ac-worldserver', 'ac-authserver'];
 
 function getProjectRoot() {
   return process.env.AC_PROJECT_ROOT || '';
+}
+
+function getComposeFiles(root = getProjectRoot()) {
+  if (!root) throw new Error('Select an AzerothCore project folder first.');
+
+  const explicit = process.env.AC_COMPOSE_FILE;
+  const candidates = explicit
+    ? [explicit]
+    : ['compose.yaml', 'compose.yml', 'docker-compose.yaml', 'docker-compose.yml', 'compose.json'];
+  const base = candidates.find(file => fs.existsSync(path.resolve(root, file)));
+  if (!base) {
+    throw new Error('No Compose file found. Select the folder containing docker-compose.yml or the offline repack compose.json.');
+  }
+
+  const files = [base];
+  if (!explicit) {
+    const overrides = {
+      'compose.yaml': ['compose.override.yaml', 'compose.override.yml'],
+      'compose.yml': ['compose.override.yml', 'compose.override.yaml'],
+      'docker-compose.yaml': ['docker-compose.override.yaml', 'docker-compose.override.yml'],
+      'docker-compose.yml': ['docker-compose.override.yml', 'docker-compose.override.yaml'],
+    };
+    const override = (overrides[base] || []).find(file => fs.existsSync(path.resolve(root, file)));
+    if (override) files.push(override);
+  }
+  return files;
+}
+
+function composeArgs(args) {
+  return ['compose', ...getComposeFiles().flatMap(file => ['-f', file]), ...args];
 }
 
 function dockerCompose(args, opts = {}) {
@@ -13,7 +45,7 @@ function dockerCompose(args, opts = {}) {
 
     const child = execFile(
       'docker',
-      ['compose', ...args],
+      composeArgs(args),
       { cwd, timeout: 120000, ...opts },
       (err, stdout, stderr) => {
         if (err) return reject(err);
@@ -43,6 +75,7 @@ async function getServiceStatuses() {
       state: c.State || 'unknown',
       status: c.Status || '',
       health: c.Health || '',
+      image: c.Image || '',
     };
   });
 }
@@ -122,7 +155,15 @@ function streamLogs(serviceName, onData, onError) {
     return null;
   }
 
-  const child = spawn('docker', ['compose', 'logs', '-f', '--tail', '100', serviceName], {
+  let args;
+  try {
+    args = composeArgs(['logs', '-f', '--tail', '100', serviceName]);
+  } catch (err) {
+    onError(err.message);
+    return null;
+  }
+
+  const child = spawn('docker', args, {
     cwd,
   });
 
@@ -145,4 +186,5 @@ module.exports = {
   getWorldserverFallbackInfo,
   parseWorldserverLogMetrics,
   statusToUptime,
+  getComposeFiles,
 };

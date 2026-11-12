@@ -165,6 +165,12 @@ function registerIPC() {
   // Settings / Setup
   ipcMain.handle('settings:get', () => settings.getAll());
   ipcMain.handle('settings:save', (_, newSettings) => {
+    try {
+      docker.getComposeFiles(newSettings.acProjectRoot);
+    } catch (err) {
+      return { error: err.message };
+    }
+
     const merged = settings.save(newSettings);
 
     // Reset the database pool so it picks up new credentials
